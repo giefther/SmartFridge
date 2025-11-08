@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SmartFridge.Core.Models;
 
 namespace SmartFridge.Core.Interfaces
 {
-    internal interface IUserService
+    public interface IUserService
     {
+        User? Authenticate(string username, string password);
+        bool Register(User user, string password);
+        bool UserExists(string username);
     }
 }

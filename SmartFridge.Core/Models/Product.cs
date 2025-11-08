@@ -1,10 +1,12 @@
-﻿namespace SmartFridge.Core.Models
+﻿using SmartFridge.Core.Models;
+
+public class Product
 {
-    public class Product
-    {
-        public string Name { get; set; }
-        public string Category { get; set; }
-        public int Quantity { get; set; }
-        public DateTime ExpirationDate { get; set; }
-    }
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public string Name { get; set; } = string.Empty;
+    public Category Category { get; set; } = null!;
+    public DateTime ExpirationDate { get; set; }
+    public double Quantity { get; set; }
+    public string Unit { get; set; } = "pcs";
+    public DateTime AddedDate { get; set; } = DateTime.Now;
 }
