@@ -1,12 +1,16 @@
-﻿using System;
+﻿using SmartFridge.Core.Models;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SmartFridge.Core.Interfaces
 {
-    internal interface IProductService
+    public interface IProductService
     {
+        IEnumerable<Product> GetAllProducts();
+        Product? GetProductById(Guid id);
+        void AddProduct(Product product);
+        void UpdateProduct(Product product);
+        void DeleteProduct(Guid id);
+        IEnumerable<Product> GetExpiredProducts();
+        IEnumerable<Product> GetExpiringSoonProducts(int days);
     }
 }
