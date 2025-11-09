@@ -4,11 +4,11 @@ using System.Windows.Forms;
 namespace SmartFridge.UI.WinForms.Styles
 {
     /// <summary>
-    /// Extension methods for applying consistent styles to WinForms controls
+    /// Расширенные методы для применения стилей к элементам форм
     /// </summary>
     public static class ControlExtensions
     {
-        // ===== BUTTON EXTENSIONS =====
+        // ===== Button =====
 
         public static Button AsDark(this Button button)
         {
@@ -72,7 +72,7 @@ namespace SmartFridge.UI.WinForms.Styles
             return button;
         }
 
-        // ===== LABEL EXTENSIONS =====
+        // ===== Label =====
 
         public static Label AsTitle(this Label label)
         {
@@ -123,7 +123,7 @@ namespace SmartFridge.UI.WinForms.Styles
             return label;
         }
 
-        // ===== PANEL EXTENSIONS =====
+        // ===== Panel =====
 
         public static Panel AsContainer(this Panel panel)
         {
@@ -148,7 +148,7 @@ namespace SmartFridge.UI.WinForms.Styles
             return panel;
         }
 
-        // ===== TEXTBOX EXTENSIONS =====
+        // ===== TextBox =====
 
         public static TextBox AsTextField(this TextBox textBox)
         {
@@ -166,7 +166,7 @@ namespace SmartFridge.UI.WinForms.Styles
             return textBox;
         }
 
-        // ===== FORM EXTENSIONS =====
+        // ===== Form =====
 
         public static Form AsMainForm(this Form form)
         {
@@ -185,7 +185,7 @@ namespace SmartFridge.UI.WinForms.Styles
             return form;
         }
 
-        // ===== COMBOBOX EXTENSIONS =====
+        // ===== ComboBox =====
 
         public static ComboBox AsDropdown(this ComboBox comboBox)
         {
@@ -195,7 +195,7 @@ namespace SmartFridge.UI.WinForms.Styles
             return comboBox;
         }
 
-        // ===== DATAGRIDVIEW EXTENSIONS =====
+        // ===== DataGridView =====
 
         public static DataGridView AsTable(this DataGridView dataGrid)
         {
@@ -211,7 +211,7 @@ namespace SmartFridge.UI.WinForms.Styles
             return dataGrid;
         }
 
-        // ===== CHECKBOX EXTENSIONS =====
+        // ===== CheckBox ====
 
         public static CheckBox AsCheckbox(this CheckBox checkBox)
         {
@@ -220,7 +220,7 @@ namespace SmartFridge.UI.WinForms.Styles
             return checkBox;
         }
 
-        // ===== GROUPBOX EXTENSIONS =====
+        // ===== GroupBox =====
 
         public static GroupBox AsGroup(this GroupBox groupBox)
         {
@@ -229,7 +229,7 @@ namespace SmartFridge.UI.WinForms.Styles
             return groupBox;
         }
 
-        // ===== ADDITIONAL STYLING HELPERS =====
+        // ===== Дополнительные стилевые помощники =====
 
         public static Control WithMargin(this Control control, int all)
         {
