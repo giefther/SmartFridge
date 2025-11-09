@@ -13,27 +13,48 @@ namespace SmartFridge.Data.Repositories
         public JsonRepository(string filePath)
         {
             _filePath = filePath;
-            if (File.Exists(_filePath))
+
+            // Проверяем существует ли файл и не пустой ли он
+            if (File.Exists(_filePath) && new FileInfo(_filePath).Length > 0)
             {
-                var json = File.ReadAllText(_filePath);
-                _items = JsonSerializer.Deserialize<List<T>>(json) ?? new List<T>();
+                try
+                {
+                    var json = File.ReadAllText(_filePath);
+                    _items = JsonSerializer.Deserialize<List<T>>(json) ?? new List<T>();
+                }
+                catch (JsonException)
+                {
+                    // Если файл поврежден или содержит невалидный JSON, 
+                    // создаем новую коллекцию
+                    _items = new List<T>();
+                }
             }
             else
             {
-                using (FileStream fs = File.Create(filePath)) ; // Создаём пустой файл, если он отсутствует
+                // Создаем пустую коллекцию и пустой файл
                 _items = new List<T>();
+
+                // Создаем директорию если не существует
+                var directory = Path.GetDirectoryName(_filePath);
+                if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
+                    Directory.CreateDirectory(directory);
+
+                SaveChanges(); // Создает файл с пустым массивом JSON
             }
         }
 
         public IEnumerable<T> GetAll() => _items;
+
         public T? GetById(Guid id) => _items.FirstOrDefault(x =>
             (Guid)x.GetType().GetProperty("Id")!.GetValue(x)! == id);
 
         public void Add(T entity) => _items.Add(entity);
+
         public void Update(T entity)
         {
             var idProp = entity.GetType().GetProperty("Id");
             if (idProp == null) return;
+
             var id = (Guid)idProp.GetValue(entity)!;
             var existing = GetById(id);
             if (existing != null)

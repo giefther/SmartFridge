@@ -14,12 +14,9 @@ namespace SmartFridge.UI.WinForms.Composition
 
         static CompositionRoot()
         {
-            // СОЗДАЕМ И СВЯЗЫВАЕМ ВСЕ ЗАВИСИМОСТИ ЗДЕСЬ:
-
-            // 1. Берем реализацию репозитория из Data слоя
             var userRepository = DataStorage.UserRepository;
 
-            // 2. Создаем сервис из Core слоя, передавая ему зависимость
+
             UserService = new UserService(userRepository);
 
             // В будущем здесь будут другие сервисы:
