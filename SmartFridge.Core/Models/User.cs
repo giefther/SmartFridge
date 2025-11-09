@@ -7,5 +7,6 @@
         public string PasswordHash { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public DateTime RegisteredAt { get; set; } = DateTime.Now;
+        public string ProductsFilePath => Path.Combine("products", $"{Id}-products.json");
     }
 }
