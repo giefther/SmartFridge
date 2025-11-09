@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using SmartFridge.Core.Models;
 using SmartFridge.UI.WinForms.Composition;
+using SmartFridge.UI.WinForms.Styles;
 
 namespace SmartFridge.UI.WinForms.Forms
 {
@@ -18,6 +19,47 @@ namespace SmartFridge.UI.WinForms.Forms
         {
             InitializeComponent();
             Text = "Умный Холодильник — Вход";
+
+            // ПРИМЕНЯЕМ СТИЛИ ЧЕРЕЗ EXTENSION METHODS
+            ApplyStyles();
+
+            // Подписываемся на событие изменения размера формы
+            this.SizeChanged += LoginForm_SizeChanged;
+
+            // Центрируем контейнер при старте
+            CenterContainer();
+        }
+
+        private void ApplyStyles()
+        {
+            // Стиль для формы
+            this.BackColor = CustomFormStyles.LightColor;
+            this.Font = CustomFormStyles.NormalFont;
+
+            // Стили через extension methods (более читабельно)
+            pnlContainer.AsContainer();
+            lblTitle.AsTitle();
+            lblUsername.AsNormal();
+            lblPassword.AsNormal();
+            btnLogin.AsDark();
+            btnRegister.AsLight();
+            txtUsername.AsTextField();
+            txtPassword.AsTextField();
+
+            // Дополнительные настройки для статуса
+            lblStatus.Font = CustomFormStyles.SmallFont;
+        }
+
+        private void LoginForm_SizeChanged(object sender, EventArgs e)
+        {
+            CenterContainer();
+        }
+
+        private void CenterContainer()
+        {
+            // Центрируем контейнер по горизонтали и вертикали
+            pnlContainer.Left = (this.ClientSize.Width - pnlContainer.Width) / 2;
+            pnlContainer.Top = (this.ClientSize.Height - pnlContainer.Height) / 2;
         }
 
         private void btnLogin_Click(object sender, EventArgs e)
@@ -31,13 +73,11 @@ namespace SmartFridge.UI.WinForms.Forms
                 return;
             }
 
-            // ИСПОЛЬЗУЕМ COMPOSITION ROOT для получения сервиса
             var user = CompositionRoot.UserService.Authenticate(username, password);
 
             if (user != null)
             {
                 ShowSuccess($"Добро пожаловать, {user.Username}!");
-                // TODO: Open MainForm
                 var mainForm = new MainForm();
                 mainForm.Show();
                 this.Hide();
@@ -68,10 +108,9 @@ namespace SmartFridge.UI.WinForms.Forms
             var newUser = new User
             {
                 Username = username,
-                Email = $"{username}@example.com" // Временное решение
+                Email = $"{username}@example.com"
             };
 
-            // ИСПОЛЬЗУЕМ COMPOSITION ROOT для получения сервиса
             var success = CompositionRoot.UserService.Register(newUser, password);
 
             if (success)
@@ -87,13 +126,13 @@ namespace SmartFridge.UI.WinForms.Forms
 
         private void ShowError(string message)
         {
-            lblStatus.ForeColor = Color.Red;
+            lblStatus.ForeColor = CustomFormStyles.DangerColor;
             lblStatus.Text = message;
         }
 
         private void ShowSuccess(string message)
         {
-            lblStatus.ForeColor = Color.Green;
+            lblStatus.ForeColor = CustomFormStyles.SuccessColor;
             lblStatus.Text = message;
         }
     }
