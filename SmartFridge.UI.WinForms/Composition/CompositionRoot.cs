@@ -8,15 +8,18 @@ namespace SmartFridge.UI.WinForms.Composition
     public static class CompositionRoot
     {
         public static IUserService UserService { get; }
-        public static IProductService ProductService { get; }
 
         static CompositionRoot()
         {
             var userRepository = DataStorage.UserRepository;
-            var productRepository = DataStorage.ProductRepository;
-
             UserService = new UserService(userRepository);
-            ProductService = new ProductService(productRepository);
+        }
+
+        // Фабричный метод для ProductService конкретного пользователя
+        public static IProductService CreateProductService(User user)
+        {
+            var productRepository = DataStorage.CreateProductRepository(user);
+            return new ProductService(productRepository);
         }
     }
 }
