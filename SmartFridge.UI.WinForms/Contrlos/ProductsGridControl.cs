@@ -50,8 +50,8 @@ namespace SmartFridge.UI.WinForms.Controls
                 Width = 200
             }.AsTextField();
             searchTextBox.TextChanged += SearchTextBox_TextChanged;
-
-            // ✅ КНОПКА ОЧИСТКИ ПОИСКА
+            
+            // Кнопка очистки поиска
             var btnClearSearch = new Button
             {
                 Text = "❌",
