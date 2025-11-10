@@ -323,8 +323,21 @@ namespace SmartFridge.UI.WinForms.Forms
 
             CreateMainContent();
         }
+
         private void CreateMainContent()
         {
+            // DataGridView
+            productsDataGrid = new DataGridView
+            {
+                Dock = DockStyle.Fill,
+                ReadOnly = true,
+                AllowUserToAddRows = false,
+                AllowUserToDeleteRows = false,
+                SelectionMode = DataGridViewSelectionMode.FullRowSelect
+            }.AsTable();
+            SetupDataGridColumns();
+            mainContentCentralContainer.Controls.Add(productsDataGrid);
+
             // Панель для поиска и статуса
             var topPanel = new Panel
             {
@@ -353,19 +366,6 @@ namespace SmartFridge.UI.WinForms.Forms
                 Width = 150
             }.AsNormal();
             topPanel.Controls.Add(statusLabel);
-
-            // DataGridView
-            productsDataGrid = new DataGridView
-            {
-                Dock = DockStyle.Fill,
-                ReadOnly = true,
-                AllowUserToAddRows = false,
-                AllowUserToDeleteRows = false,
-                SelectionMode = DataGridViewSelectionMode.FullRowSelect
-            }.AsTable();
-
-            SetupDataGridColumns();
-            mainContentCentralContainer.Controls.Add(productsDataGrid);
 
             // Загружаем данные
             LoadProducts();
