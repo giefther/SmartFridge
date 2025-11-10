@@ -18,20 +18,12 @@ namespace SmartFridge.UI.WinForms.Forms
         // Контроллы
         private ProductsGridControl productsGridControl;
         private HeaderControl headerControl;
+        private ToolbarControl toolbarControl;
 
         // Основные контейнеры
         private Panel topContainer;
         private Panel centralContainer;
         private Panel bottomContainer;
-
-        // Содержимое TopContainer
-        private Panel toolbarContainer;
-        private Panel leftToolbarContainer;
-        private Panel rightToolbarContainer;
-        private Button btnDecreaseTemp;
-        private Button btnIncreaseTemp;
-        private Button btnAddProduct;
-        private Button btnDeleteProduct;
 
         // Содержимое CentralContainer
         private Panel leftCentralContainer;
@@ -85,11 +77,25 @@ namespace SmartFridge.UI.WinForms.Forms
             this.Controls.Add(topContainer);
 
             // Header и Toolbar внутри TopContainer
-            CreateHeaderControl();    
-            CreateToolbarContainer();
-            CreateToolbarContent();
+            CreateHeaderControl();
+            CreateToolbarControl();  
         }
+        private void CreateToolbarControl()
+        {
+            toolbarControl = new ToolbarControl()
+            {
+                Height = CalculatePercentageValue(topContainer.Height, _toolbarToTopHeightPercentage),
+                Dock = DockStyle.Bottom
+            };
 
+            // Подписываемся на события
+            toolbarControl.AddProductClicked += (s, e) => AddProduct();
+            toolbarControl.DeleteProductClicked += (s, e) => DeleteProduct();
+            toolbarControl.IncreaseTempClicked += (s, e) => IncreaseTemperature();
+            toolbarControl.DecreaseTempClicked += (s, e) => DecreaseTemperature();
+
+            topContainer.Controls.Add(toolbarControl);
+        }
         private void CreateHeaderControl()
         {
             headerControl = new HeaderControl(_currentUser)
@@ -105,83 +111,6 @@ namespace SmartFridge.UI.WinForms.Forms
         {
             CompositionRoot.ClearUserCache(_currentUser.Id);
             Application.Restart();
-        }
-
-        private void CreateToolbarContainer()
-        {
-            toolbarContainer = new Panel().AsToolbarContainer();
-            toolbarContainer.Height = CalculatePercentageValue(topContainer.Height, _toolbarToTopHeightPercentage);
-            toolbarContainer.Dock = DockStyle.Bottom;
-            topContainer.Controls.Add(toolbarContainer);
-        }
-
-        private void CreateToolbarContent()
-        {
-            CreateLeftToolbarContainer();
-            CreateRightToolbarContainer();
-        }
-
-        private void CreateLeftToolbarContainer()
-        {
-            leftToolbarContainer = new Panel
-            {
-                Dock = DockStyle.Left,
-                Width = 350,
-                Padding = new Padding(20, 8, 0, 8)
-            };
-            toolbarContainer.Controls.Add(leftToolbarContainer);
-
-            // Кнопка уменьшения температуры
-            btnDecreaseTemp = new Button
-            {
-                Text = "❄️ Уменьшить",
-                Size = new Size(165, 45),
-                Location = new Point(0, 0)
-            }.AsLight();
-            btnDecreaseTemp.Click += BtnDecreaseTemp_Click;
-            leftToolbarContainer.Controls.Add(btnDecreaseTemp);
-
-            // Кнопка увеличения температуры
-            btnIncreaseTemp = new Button
-            {
-                Text = "☀️ Увеличить",
-                Size = new Size(165, 45),
-                Location = new Point(175, 0)
-            }.AsLight();
-            btnIncreaseTemp.Click += BtnIncreaseTemp_Click;
-            leftToolbarContainer.Controls.Add(btnIncreaseTemp);
-        }
-
-        private void CreateRightToolbarContainer()
-        {
-            rightToolbarContainer = new Panel
-            {
-                Dock = DockStyle.Right,
-                Width = 250,
-                Padding = new Padding(0, 8, 20, 8)
-            };
-            toolbarContainer.Controls.Add(rightToolbarContainer);
-
-            // Кнопка добавления продукта
-            btnAddProduct = new Button
-            {
-                Text = "➕ Добавить",
-                Size = new Size(110, 45),
-                Location = new Point(0, 0)
-            }.AsSuccess();
-            btnAddProduct.Click += BtnAddProduct_Click;
-            rightToolbarContainer.Controls.Add(btnAddProduct);
-
-            // Кнопка удаления продукта
-            btnDeleteProduct = new Button
-            {
-                Text = "➖ Удалить",
-                Size = new Size(110, 45),
-                Location = new Point(120, 0),
-                Enabled = false // Изначально неактивна
-            }.AsDanger();
-            btnDeleteProduct.Click += BtnDeleteProduct_Click;
-            rightToolbarContainer.Controls.Add(btnDeleteProduct);
         }
 
         // Обработчики событий (заглушки)
@@ -202,6 +131,51 @@ namespace SmartFridge.UI.WinForms.Forms
             var products = _productService.GetAllProducts();
             productsGridControl.LoadProducts(products);
             UpdateStatistics();
+        }
+        private void AddProduct()
+        {
+            using (var dialog = new AddProductForm(_productService))
+            {
+                var result = dialog.ShowDialog();
+                if (result == DialogResult.OK)
+                {
+                    LoadProducts();
+                }
+            }
+        }
+
+        private void DeleteProduct()
+        {
+            var selectedProduct = productsGridControl.SelectedProduct;
+            if (selectedProduct == null)
+            {
+                MessageBox.Show("Выберите продукт для удаления", "Информация",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            try
+            {
+                _productService.DeleteProduct(selectedProduct.Id);
+                LoadProducts();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при удалении продукта: {ex.Message}", "Ошибка",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void IncreaseTemperature()
+        {
+            // TODO: Увеличить температуру  
+            MessageBox.Show("Температура увеличена");
+        }
+
+        private void DecreaseTemperature()
+        {
+            // TODO: Уменьшить температуру
+            MessageBox.Show("Температура уменьшена");
         }
         private void BtnDeleteProduct_Click(object sender, EventArgs e)
         {
@@ -275,7 +249,7 @@ namespace SmartFridge.UI.WinForms.Forms
 
             // Подписываемся на событие выбора
             productsGridControl.SelectionChanged += (s, e) =>
-                btnDeleteProduct.Enabled = productsGridControl.SelectedProduct != null;
+                toolbarControl.DeleteButtonEnabled = productsGridControl.SelectedProduct != null;
         }
 
         private void CreateLeftContent()
@@ -488,8 +462,8 @@ namespace SmartFridge.UI.WinForms.Forms
             if(headerControl != null)
                 headerControl.Height = CalculatePercentageValue(topContainer.Height, _headerToTopHeightPercentage);
 
-            if (toolbarContainer != null)
-                toolbarContainer.Height = CalculatePercentageValue(topContainer.Height, _toolbarToTopHeightPercentage);
+            if (toolbarControl != null)
+                toolbarControl.Height = CalculatePercentageValue(topContainer.Height, _toolbarToTopHeightPercentage);
 
             if (leftCentralContainer != null)
                 leftCentralContainer.Width = CalculatePercentageValue(centralContainer.Width, _leftCentralWidthPercentage);
