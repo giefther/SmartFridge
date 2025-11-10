@@ -136,9 +136,9 @@ namespace SmartFridge.UI.WinForms.Styles
             button.ForeColor = CustomFormStyles.SecondaryColor;
             button.BackColor = CustomFormStyles.DarkColor;
             button.FlatStyle = FlatStyle.Flat;
+            button.Font = CustomFormStyles.NormalFont;
             button.FlatAppearance.BorderSize = 1;
             button.FlatAppearance.BorderColor = CustomFormStyles.SecondaryColor;
-            button.Font = CustomFormStyles.NormalFont;
             button.Cursor = Cursors.Hand;
             button.Padding = new Padding(10, 5, 10, 5);
             return button;
@@ -341,6 +341,16 @@ namespace SmartFridge.UI.WinForms.Styles
             dataGrid.ColumnHeadersDefaultCellStyle.Font = CustomFormStyles.NormalFont;
             dataGrid.RowHeadersVisible = false;
             dataGrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            // Настройка стиля ячеек
+            dataGrid.DefaultCellStyle.SelectionBackColor = CustomFormStyles.SecondaryColor;
+            dataGrid.DefaultCellStyle.SelectionForeColor = CustomFormStyles.LightColor;
+            dataGrid.DefaultCellStyle.Font = CustomFormStyles.NormalFont;
+            dataGrid.EnableHeadersVisualStyles = false;
+            dataGrid.ColumnHeadersDefaultCellStyle.BackColor = CustomFormStyles.SecondaryColor;
+            dataGrid.ColumnHeadersDefaultCellStyle.ForeColor = CustomFormStyles.LightColor;
+            dataGrid.ColumnHeadersDefaultCellStyle.Font = CustomFormStyles.NormalFont;
+            dataGrid.ColumnHeadersDefaultCellStyle.SelectionBackColor = CustomFormStyles.SecondaryColor;
+            dataGrid.ColumnHeadersDefaultCellStyle.SelectionForeColor = CustomFormStyles.LightColor;
             return dataGrid;
         }
 

@@ -358,7 +358,8 @@ namespace SmartFridge.UI.WinForms.Forms
                 ReadOnly = true,
                 AllowUserToAddRows = false,
                 AllowUserToDeleteRows = false,
-                SelectionMode = DataGridViewSelectionMode.FullRowSelect
+                SelectionMode = DataGridViewSelectionMode.FullRowSelect,
+                AutoGenerateColumns = false // Исключает столбцы id, category, addeddate
             }.AsTable();
             SetupDataGridColumns();
             mainContentCentralContainer.Controls.Add(productsDataGrid);
@@ -417,6 +418,7 @@ namespace SmartFridge.UI.WinForms.Forms
             productsDataGrid.Columns.Clear();
 
             productsDataGrid.Columns.Add(new DataGridViewTextBoxColumn
+            
             {
                 Name = "Name",
                 HeaderText = "Название",
