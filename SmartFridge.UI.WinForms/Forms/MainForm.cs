@@ -34,11 +34,19 @@ namespace SmartFridge.UI.WinForms.Forms
         private Button btnAddProduct;
         private Button btnDeleteProduct;
 
+        // Содержимое CentralContainer
+        private Panel leftCentralContainer;
+        private Panel mainContentCentralContainer;
+        private Panel rightCentralContainer;
+
         // Относительные величины
         private const int _topToFormHeightPercentage = 21;
         private const int _bottomToFormHeightPercentage = 11;
         private const int _headerToTopHeightPercentage = 51;
         private const int _toolbarToTopHeightPercentage = 51;
+        private const int _leftCentralWidthPercentage = 30;
+        private const int _mainCentralWidthPercentage = 50;
+        private const int _rightCentralWidthPercentage = 20;
 
         public MainForm(User user)
         {
@@ -83,6 +91,7 @@ namespace SmartFridge.UI.WinForms.Forms
             CreateTopContainer();
             CreateBottomContainer();
             CreateCentralContainer();
+            CreateCentralContainers();
         }
 
         private void CreateTopContainer()
@@ -283,6 +292,76 @@ namespace SmartFridge.UI.WinForms.Forms
             this.Controls.Add(centralContainer);
         }
 
+        private void CreateCentralContainers()
+        {
+            // Левый контейнер - 30%
+            leftCentralContainer = new Panel
+            {
+                Dock = DockStyle.Left,
+                Width = CalculatePercentageValue(centralContainer.Width, _leftCentralWidthPercentage),
+                BackColor = Color.White,
+                Padding = new Padding(15),
+                BorderStyle = BorderStyle.FixedSingle
+            };
+            centralContainer.Controls.Add(leftCentralContainer);
+
+            // Правый контейнер - 20%
+            rightCentralContainer = new Panel
+            {
+                Dock = DockStyle.Right,
+                Width = CalculatePercentageValue(centralContainer.Width, _rightCentralWidthPercentage),
+                BackColor = Color.White,
+                Padding = new Padding(15),
+                BorderStyle = BorderStyle.FixedSingle
+            };
+            centralContainer.Controls.Add(rightCentralContainer);
+
+            // Центральный контейнер - 50% (оставшееся пространство)
+            mainContentCentralContainer = new Panel
+            {
+                Dock = DockStyle.Fill,
+                BackColor = Color.White,
+                Padding = new Padding(15),
+                BorderStyle = BorderStyle.FixedSingle
+            };
+            centralContainer.Controls.Add(mainContentCentralContainer);
+
+            // Добавляем заглушки для визуализации
+            AddPlaceholderContent();
+        }
+        private void AddPlaceholderContent()
+        {
+            // Заглушка для левого контейнера
+            var leftLabel = new Label
+            {
+                Text = "📊 Статистика и уведомления\n(30% ширины)",
+                Dock = DockStyle.Top,
+                TextAlign = ContentAlignment.MiddleCenter,
+                Height = 60
+            }.AsHeader();
+            leftCentralContainer.Controls.Add(leftLabel);
+
+            // Заглушка для центрального контейнера  
+            var centerLabel = new Label
+            {
+                Text = "📋 Список продуктов\n(50% ширины)",
+                Dock = DockStyle.Top,
+                TextAlign = ContentAlignment.MiddleCenter,
+                Height = 60
+            }.AsHeader();
+            mainContentCentralContainer.Controls.Add(centerLabel);
+
+            // Заглушка для правого контейнера
+            var rightLabel = new Label
+            {
+                Text = "⚙️ Фильтры и сортировка\n(20% ширины)",
+                Dock = DockStyle.Top,
+                TextAlign = ContentAlignment.MiddleCenter,
+                Height = 60
+            }.AsHeader();
+            rightCentralContainer.Controls.Add(rightLabel);
+        }
+
         private void CreateBottomContainer()
         {
             bottomContainer = new Panel().AsBottomContainer();
@@ -324,6 +403,12 @@ namespace SmartFridge.UI.WinForms.Forms
 
             if (toolbarContainer != null)
                 toolbarContainer.Height = CalculatePercentageValue(topContainer.Height, _toolbarToTopHeightPercentage);
+
+            if (leftCentralContainer != null)
+                leftCentralContainer.Width = CalculatePercentageValue(centralContainer.Width, _leftCentralWidthPercentage);
+
+            if (rightCentralContainer != null)
+                rightCentralContainer.Width = CalculatePercentageValue(centralContainer.Width, _rightCentralWidthPercentage);
         }
     }
 }
