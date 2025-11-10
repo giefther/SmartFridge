@@ -20,7 +20,6 @@ namespace SmartFridge.UI.WinForms.Controls
         private DataGridView productsDataGrid;
         private TextBox searchTextBox;
         private Label statusLabel;
-        private Button btnClearSearch;
         private List<Product> _allProducts;
         private List<Product> _filteredProducts;
 

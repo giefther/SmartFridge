@@ -114,18 +114,6 @@ namespace SmartFridge.UI.WinForms.Forms
         }
 
         // Обработчики событий (заглушки)
-        private void BtnAddProduct_Click(object sender, EventArgs e)
-        {
-            using (var dialog = new AddProductForm(_productService))
-            {
-                var result = dialog.ShowDialog();
-                if (result == DialogResult.OK) // Пользователь нажал "Добавить"
-                {
-                    var newProduct = dialog.CreatedProduct;
-                    LoadProducts();
-                }
-            }
-        }
         private void LoadProducts()
         {
             var products = _productService.GetAllProducts();
@@ -176,39 +164,6 @@ namespace SmartFridge.UI.WinForms.Forms
         {
             // TODO: Уменьшить температуру
             MessageBox.Show("Температура уменьшена");
-        }
-        private void BtnDeleteProduct_Click(object sender, EventArgs e)
-        {
-            var selectedProduct = productsGridControl.SelectedProduct;
-            if (selectedProduct == null)
-            {
-                MessageBox.Show("Выберите продукт для удаления", "Информация",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
-
-            try
-            {
-                _productService.DeleteProduct(selectedProduct.Id);
-                LoadProducts();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Ошибка при удалении продукта: {ex.Message}", "Ошибка",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void BtnDecreaseTemp_Click(object sender, EventArgs e)
-        {
-            // TODO: Уменьшить температуру
-            MessageBox.Show("Температура уменьшена");
-        }
-
-        private void BtnIncreaseTemp_Click(object sender, EventArgs e)
-        {
-            // TODO: Увеличить температуру  
-            MessageBox.Show("Температура увеличена");
         }
 
         private void CreateCentralContainer()
