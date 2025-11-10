@@ -197,9 +197,15 @@ namespace SmartFridge.UI.WinForms.Forms
         // Обработчики событий (заглушки)
         private void BtnAddProduct_Click(object sender, EventArgs e)
         {
-            var addProduct = new AddProductForm(_productService);
-            addProduct.Show();
-            this.Hide();
+            using (var dialog = new AddProductForm(_productService))
+            {
+                var result = dialog.ShowDialog();
+                if (result == DialogResult.OK) // Пользователь нажал "Добавить"
+                {
+                    var newProduct = dialog.CreatedProduct;
+                    LoadProducts();
+                }
+            }
         }
 
         private void BtnDeleteProduct_Click(object sender, EventArgs e)
