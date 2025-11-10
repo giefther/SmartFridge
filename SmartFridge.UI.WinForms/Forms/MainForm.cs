@@ -297,33 +297,19 @@ namespace SmartFridge.UI.WinForms.Forms
             // Левый контейнер - 30%
             leftCentralContainer = new Panel
             {
-                Dock = DockStyle.Left,
-                Width = CalculatePercentageValue(centralContainer.Width, _leftCentralWidthPercentage),
-                BackColor = Color.White,
-                Padding = new Padding(15),
-                BorderStyle = BorderStyle.FixedSingle
-            };
+                Width = CalculatePercentageValue(centralContainer.Width, _leftCentralWidthPercentage)
+            }.AsLeftCentralContainer();
             centralContainer.Controls.Add(leftCentralContainer);
 
             // Правый контейнер - 20%
             rightCentralContainer = new Panel
             {
-                Dock = DockStyle.Right,
                 Width = CalculatePercentageValue(centralContainer.Width, _rightCentralWidthPercentage),
-                BackColor = Color.White,
-                Padding = new Padding(15),
-                BorderStyle = BorderStyle.FixedSingle
-            };
+            }.AsRightCentralContainer();
             centralContainer.Controls.Add(rightCentralContainer);
 
             // Центральный контейнер - 50% (оставшееся пространство)
-            mainContentCentralContainer = new Panel
-            {
-                Dock = DockStyle.Fill,
-                BackColor = Color.White,
-                Padding = new Padding(15),
-                BorderStyle = BorderStyle.FixedSingle
-            };
+            mainContentCentralContainer = new Panel{}.AsMainContentCentralContainer();
             centralContainer.Controls.Add(mainContentCentralContainer);
 
             // Добавляем заглушки для визуализации

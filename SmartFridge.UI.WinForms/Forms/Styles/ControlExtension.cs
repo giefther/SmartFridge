@@ -10,6 +10,33 @@ namespace SmartFridge.UI.WinForms.Styles
     {
         // ===== Main Form Containers =====
 
+        public static Panel AsLeftCentralContainer(this Panel panel)
+        {
+            panel.Dock = DockStyle.Left;
+            panel.BackColor = Color.White;
+            panel.Padding = new Padding(15);
+            panel.BorderStyle = BorderStyle.FixedSingle;
+            return panel;
+        }
+
+        public static Panel AsMainContentCentralContainer(this Panel panel)
+        {
+            panel.Dock = DockStyle.Fill;
+            panel.BackColor = Color.White;
+            panel.Padding = new Padding(15);
+            panel.BorderStyle = BorderStyle.FixedSingle;
+            return panel;
+        }
+
+        public static Panel AsRightCentralContainer(this Panel panel)
+        {
+            panel.Dock = DockStyle.Right;
+            panel.BackColor = Color.White;
+            panel.Padding = new Padding(15);
+            panel.BorderStyle = BorderStyle.FixedSingle;
+            return panel;
+        }
+
         public static Panel AsTopContainer(this Panel panel)
         {
             panel.Dock = DockStyle.Top;
