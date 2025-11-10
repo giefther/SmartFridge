@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using SmartFridge.Core.Models;
+using SmartFridge.UI.WinForms.Styles;
 
 namespace SmartFridge.UI.WinForms.Controls
 {
@@ -33,12 +34,12 @@ namespace SmartFridge.UI.WinForms.Controls
         {
             this.SuspendLayout();
 
-            // 1. ПЕРВЫМ создаем панель поиска (DockStyle.Top)
+            // Панель поиска
             var searchPanel = new Panel
             {
                 Dock = DockStyle.Top,
                 Height = 40,
-                Padding = new Padding(10, 5, 10, 5)
+                Padding = new Padding(0, 5, 0, 5)
             };
 
             // Поле поиска
@@ -47,30 +48,32 @@ namespace SmartFridge.UI.WinForms.Controls
                 PlaceholderText = "🔍 Поиск продуктов...",
                 Dock = DockStyle.Left,
                 Width = 200
-            };
+            }.AsTextField();
             searchTextBox.TextChanged += SearchTextBox_TextChanged;
 
-            // Кнопка очистки поиска
-            btnClearSearch = new Button
+            // ✅ КНОПКА ОЧИСТКИ ПОИСКА
+            var btnClearSearch = new Button
             {
                 Text = "❌",
-                Size = new Size(30, 23),
-                Location = new Point(205, 8)
-            };
+            }.AsClearSearch();
+
             btnClearSearch.Click += BtnClearSearch_Click;
+
 
             // Статус
             statusLabel = new Label
             {
                 Dock = DockStyle.Right,
-                Width = 150,
-                TextAlign = ContentAlignment.MiddleRight
-            };
+                TextAlign = ContentAlignment.MiddleRight,
+                AutoSize = false,
+                Width = 150
+            }.AsNormal();
+
 
             // Добавляем элементы в searchPanel
             searchPanel.Controls.AddRange(new Control[] { searchTextBox, btnClearSearch, statusLabel });
 
-            // 2. ВТОРЫМ создаем таблицу (DockStyle.Fill)
+
             productsDataGrid = new DataGridView
             {
                 Dock = DockStyle.Fill,
@@ -78,14 +81,14 @@ namespace SmartFridge.UI.WinForms.Controls
                 AllowUserToAddRows = false,
                 AllowUserToDeleteRows = false,
                 SelectionMode = DataGridViewSelectionMode.FullRowSelect,
-                AutoGenerateColumns = false
-            };
+                AutoGenerateColumns = false // Исключает столбцы id, category, addeddate
+            }.AsTable();
             productsDataGrid.SelectionChanged += (s, e) => SelectionChanged?.Invoke(this, e);
             productsDataGrid.RowPrePaint += ProductsDataGrid_RowPrePaint;
 
-            // 3. ВАЖНО: Сначала добавляем searchPanel, потом productsDataGrid
-            this.Controls.Add(searchPanel);      // DockStyle.Top - первый
-            this.Controls.Add(productsDataGrid); // DockStyle.Fill - последний
+
+            this.Controls.Add(productsDataGrid); // DockStyle.Fill 
+            this.Controls.Add(searchPanel);      // DockStyle.Top 
 
             this.ResumeLayout(false);
         }

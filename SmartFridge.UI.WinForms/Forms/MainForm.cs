@@ -356,8 +356,8 @@ namespace SmartFridge.UI.WinForms.Forms
             }.AsRightCentralContainer();
             centralContainer.Controls.Add(rightCentralContainer);
 
-            CreateLeftContent();
             CreateProductsGrid();
+            CreateLeftContent();
         }
 
         private void CreateProductsGrid()
