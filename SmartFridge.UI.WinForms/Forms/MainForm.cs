@@ -29,12 +29,11 @@ namespace SmartFridge.UI.WinForms.Forms
         private Panel leftCentralContainer;
         private Panel mainContentCentralContainer;
         private Panel rightCentralContainer;
-        
+        private NotificationsControl notificationsControl;
+
         // Содержимое LeftContainer
         private Panel statContainer;
-        private Panel notificationsContainer;
         private Label statTitle;
-        private Label notificationsTitle;
         // Лейблы статистики продуктов
         private Label totalValueLabel;
         private Label freshValueLabel;
@@ -95,6 +94,13 @@ namespace SmartFridge.UI.WinForms.Forms
             toolbarControl.DecreaseTempClicked += (s, e) => DecreaseTemperature();
 
             topContainer.Controls.Add(toolbarControl);
+        }
+        private void CreateNotificationsControl()
+        {
+            notificationsControl = new NotificationsControl
+            {
+                Dock = DockStyle.Fill
+            };
         }
         private void CreateHeaderControl()
         {
@@ -209,16 +215,9 @@ namespace SmartFridge.UI.WinForms.Forms
 
         private void CreateLeftContent()
         {
-            // NotificationsContainer - нижняя половина (50%)
-            notificationsContainer = new Panel
-            {
-                Dock = DockStyle.Fill, // Занимает оставшееся пространство
-                BackColor = Color.White,
-                BorderStyle = BorderStyle.FixedSingle,
-                Padding = new Padding(10)
-            };
-            leftCentralContainer.Controls.Add(notificationsContainer);
-
+            // NotificationsControl - нижняя половина (50%)
+            CreateNotificationsControl();
+            leftCentralContainer.Controls.Add(notificationsControl);
             // StatContainer - верхняя половина (50%)
             statContainer = new Panel
             {
@@ -230,33 +229,8 @@ namespace SmartFridge.UI.WinForms.Forms
             };
             leftCentralContainer.Controls.Add(statContainer);
 
-            // Заголовок для StatContainer
-            statTitle = new Label
-            {
-                Text = "📊 Статистика",
-                Dock = DockStyle.Top,
-                Height = 30,
-                TextAlign = ContentAlignment.MiddleLeft,
-                Font = CustomFormStyles.HeaderFont,
-                ForeColor = CustomFormStyles.DarkColor
-            };
-            statContainer.Controls.Add(statTitle);
-
-            // Заголовок для NotificationsContainer
-            notificationsTitle = new Label
-            {
-                Text = "🔔 Уведомления",
-                Dock = DockStyle.Top,
-                Height = 30,
-                TextAlign = ContentAlignment.MiddleLeft,
-                Font = CustomFormStyles.HeaderFont,
-                ForeColor = CustomFormStyles.DarkColor
-            };
-            notificationsContainer.Controls.Add(notificationsTitle);
-
-            // Пока что добавляем заглушки
+            // Создаем содержимое статистики
             CreateStatContent();
-            CreateNotificationsContent();
         }
         private void CreateStatItem(Panel parent, string title, string value, Color color, int topPosition, ref Label valueLabel)
         {
@@ -362,20 +336,6 @@ namespace SmartFridge.UI.WinForms.Forms
             {
                 Console.WriteLine($"Ошибка обновления статистики: {ex.Message}");
             }
-        }
-
-        private void CreateNotificationsContent()
-        {
-            // Заглушка для уведомлений
-            var notificationsPlaceholder = new Label
-            {
-                Text = "Здесь будут уведомления",
-                Dock = DockStyle.Fill,
-                TextAlign = ContentAlignment.MiddleCenter,
-                Font = CustomFormStyles.NormalFont,
-                ForeColor = CustomFormStyles.SecondaryColor
-            };
-            notificationsContainer.Controls.Add(notificationsPlaceholder);
         }
 
         private void CreateBottomContainer()
