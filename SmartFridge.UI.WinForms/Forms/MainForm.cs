@@ -44,6 +44,11 @@ namespace SmartFridge.UI.WinForms.Forms
         private Label statusLabel;
         private List<Product> _allProducts; // Все продукты для поиска
         private List<Product> _filteredProducts; // Отфильтрованные продукты для поиска
+        // Содержимое LeftContainer
+        private Panel statContainer;
+        private Panel notificationsContainer;
+        private Label statTitle;
+        private Label notificationsTitle;
 
         // Относительные величины
         private const int _topToFormHeightPercentage = 21;
@@ -53,6 +58,7 @@ namespace SmartFridge.UI.WinForms.Forms
         private const int _leftCentralWidthPercentage = 30;
         private const int _mainCentralWidthPercentage = 50;
         private const int _rightCentralWidthPercentage = 20;
+        private const int _statToLeftHeightPercentage = 50;
 
         public MainForm(SmartFridge.Core.Models.User user)
         {
@@ -347,6 +353,86 @@ namespace SmartFridge.UI.WinForms.Forms
             centralContainer.Controls.Add(rightCentralContainer);
 
             CreateMainContent();
+            CreateLeftContent();
+        }
+
+        private void CreateLeftContent()
+        {
+            // NotificationsContainer - нижняя половина (50%)
+            notificationsContainer = new Panel
+            {
+                Dock = DockStyle.Fill, // Занимает оставшееся пространство
+                BackColor = Color.White,
+                BorderStyle = BorderStyle.FixedSingle,
+                Padding = new Padding(10)
+            };
+            leftCentralContainer.Controls.Add(notificationsContainer);
+
+            // StatContainer - верхняя половина (50%)
+            statContainer = new Panel
+            {
+                Dock = DockStyle.Top,
+                Height = CalculatePercentageValue(leftCentralContainer.Height, _statToLeftHeightPercentage),
+                BackColor = Color.White,
+                BorderStyle = BorderStyle.FixedSingle,
+                Padding = new Padding(10)
+            };
+            leftCentralContainer.Controls.Add(statContainer);
+
+            // Заголовок для StatContainer
+            statTitle = new Label
+            {
+                Text = "📊 Статистика",
+                Dock = DockStyle.Top,
+                Height = 30,
+                TextAlign = ContentAlignment.MiddleLeft,
+                Font = CustomFormStyles.HeaderFont,
+                ForeColor = CustomFormStyles.DarkColor
+            };
+            statContainer.Controls.Add(statTitle);
+
+            // Заголовок для NotificationsContainer
+            notificationsTitle = new Label
+            {
+                Text = "🔔 Уведомления",
+                Dock = DockStyle.Top,
+                Height = 30,
+                TextAlign = ContentAlignment.MiddleLeft,
+                Font = CustomFormStyles.HeaderFont,
+                ForeColor = CustomFormStyles.DarkColor
+            };
+            notificationsContainer.Controls.Add(notificationsTitle);
+
+            // Пока что добавляем заглушки
+            CreateStatContent();
+            CreateNotificationsContent();
+        }
+        private void CreateStatContent()
+        {
+            // Заглушка для статистики
+            var statPlaceholder = new Label
+            {
+                Text = "Здесь будет статистика продуктов",
+                Dock = DockStyle.Fill,
+                TextAlign = ContentAlignment.MiddleCenter,
+                Font = CustomFormStyles.NormalFont,
+                ForeColor = CustomFormStyles.SecondaryColor
+            };
+            statContainer.Controls.Add(statPlaceholder);
+        }
+
+        private void CreateNotificationsContent()
+        {
+            // Заглушка для уведомлений
+            var notificationsPlaceholder = new Label
+            {
+                Text = "Здесь будут уведомления",
+                Dock = DockStyle.Fill,
+                TextAlign = ContentAlignment.MiddleCenter,
+                Font = CustomFormStyles.NormalFont,
+                ForeColor = CustomFormStyles.SecondaryColor
+            };
+            notificationsContainer.Controls.Add(notificationsPlaceholder);
         }
 
         private void CreateMainContent()
@@ -430,7 +516,7 @@ namespace SmartFridge.UI.WinForms.Forms
             {
                 Name = "Category",
                 HeaderText = "Категория",
-                DataPropertyName = "Category.Name",
+                DataPropertyName = "CategoryName",
                 Width = 120
             });
 
@@ -588,6 +674,10 @@ namespace SmartFridge.UI.WinForms.Forms
 
             if (rightCentralContainer != null)
                 rightCentralContainer.Width = CalculatePercentageValue(centralContainer.Width, _rightCentralWidthPercentage);
+            if (statContainer != null && leftCentralContainer != null)
+            {
+                statContainer.Height = CalculatePercentageValue(leftCentralContainer.Height, _statToLeftHeightPercentage);
+            }
         }
     }
 }
