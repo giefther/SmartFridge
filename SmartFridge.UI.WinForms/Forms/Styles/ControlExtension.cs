@@ -122,7 +122,15 @@ namespace SmartFridge.UI.WinForms.Styles
         }
 
         // ===== Button =====
-
+        public static Button AsClearSearch(this Button button)
+        {
+            button.Size = new Size(30, 25);
+            button.Location = new Point(205, 5);
+            button.Font = new Font("Segoe UI", 8);
+            button.BackColor = Color.LightGray;
+            button.FlatStyle = FlatStyle.Flat;
+            return button;
+        }
         public static Button AsDark(this Button button)
         {
             button.ForeColor = CustomFormStyles.SecondaryColor;

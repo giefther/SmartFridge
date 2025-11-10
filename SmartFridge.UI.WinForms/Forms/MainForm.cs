@@ -362,7 +362,6 @@ namespace SmartFridge.UI.WinForms.Forms
             }.AsTable();
             SetupDataGridColumns();
             mainContentCentralContainer.Controls.Add(productsDataGrid);
-
             // Панель для поиска и статуса
             var topPanel = new Panel
             {
@@ -382,6 +381,16 @@ namespace SmartFridge.UI.WinForms.Forms
             searchTextBox.TextChanged += SearchTextBox_TextChanged;
             topPanel.Controls.Add(searchTextBox);
 
+            // ✅ КНОПКА ОЧИСТКИ ПОИСКА
+            var btnClearSearch = new Button
+            {
+                Text = "❌",
+            }.AsClearSearch();
+
+            btnClearSearch.Click += BtnClearSearch_Click;
+
+            topPanel.Controls.Add(btnClearSearch);
+
             // Статус
             statusLabel = new Label
             {
@@ -394,6 +403,10 @@ namespace SmartFridge.UI.WinForms.Forms
 
             LoadProducts();
             productsDataGrid.SelectionChanged += ProductsDataGrid_SelectionChanged;
+        }
+        private void BtnClearSearch_Click(object sender, EventArgs e)
+        {
+            searchTextBox.Clear();
         }
         private void ProductsDataGrid_SelectionChanged(object sender, EventArgs e)
         {
