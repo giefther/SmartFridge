@@ -1,4 +1,5 @@
-﻿using SmartFridge.Core.Interfaces;
+﻿using Microsoft.VisualBasic.ApplicationServices;
+using SmartFridge.Core.Interfaces;
 using SmartFridge.Core.Models;
 using SmartFridge.UI.WinForms.Composition;
 using SmartFridge.UI.WinForms.Styles;
@@ -9,7 +10,7 @@ namespace SmartFridge.UI.WinForms.Forms
 {
     public partial class MainForm : Form
     {
-        private readonly User _currentUser;
+        private readonly SmartFridge.Core.Models.User _currentUser;
         private readonly IProductService _productService;
         private System.Windows.Forms.Timer timeTimer;
 
@@ -51,7 +52,7 @@ namespace SmartFridge.UI.WinForms.Forms
         private const int _mainCentralWidthPercentage = 50;
         private const int _rightCentralWidthPercentage = 20;
 
-        public MainForm(User user)
+        public MainForm(SmartFridge.Core.Models.User user)
         {
             _currentUser = user ?? throw new ArgumentNullException(nameof(user));
             _productService = CompositionRoot.GetProductService(user);
@@ -196,8 +197,9 @@ namespace SmartFridge.UI.WinForms.Forms
         // Обработчики событий (заглушки)
         private void BtnAddProduct_Click(object sender, EventArgs e)
         {
-            // TODO: Открыть форму добавления продукта
-            MessageBox.Show("Форма добавления продукта будет здесь");
+            var addProduct = new AddProductForm(_productService);
+            addProduct.Show();
+            this.Hide();
         }
 
         private void BtnDeleteProduct_Click(object sender, EventArgs e)
