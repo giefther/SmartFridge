@@ -135,6 +135,7 @@ namespace SmartFridge.UI.WinForms.Forms
                 Size = new Size(165, 45),
                 Location = new Point(0, 0)
             }.AsLight();
+            btnDecreaseTemp.Click += BtnDecreaseTemp_Click;
             leftToolbarContainer.Controls.Add(btnDecreaseTemp);
 
             // Кнопка увеличения температуры
@@ -144,6 +145,7 @@ namespace SmartFridge.UI.WinForms.Forms
                 Size = new Size(165, 45),
                 Location = new Point(175, 0)
             }.AsLight();
+            btnIncreaseTemp.Click += BtnIncreaseTemp_Click;
             leftToolbarContainer.Controls.Add(btnIncreaseTemp);
         }
 
@@ -161,7 +163,7 @@ namespace SmartFridge.UI.WinForms.Forms
             btnAddProduct = new Button
             {
                 Text = "➕ Добавить",
-                Size = new Size(110, 30),
+                Size = new Size(110, 45),
                 Location = new Point(0, 0)
             }.AsSuccess(); // Зеленая для позитивного действия
             btnAddProduct.Click += BtnAddProduct_Click;
@@ -171,9 +173,10 @@ namespace SmartFridge.UI.WinForms.Forms
             btnDeleteProduct = new Button
             {
                 Text = "➖ Удалить",
-                Size = new Size(110, 30),
+                Size = new Size(110, 45),
                 Location = new Point(120, 0)
             }.AsDanger(); // Красная для опасного действия
+            btnDeleteProduct.Click += BtnDeleteProduct_Click;
             rightToolbarContainer.Controls.Add(btnDeleteProduct);
         }
 
@@ -182,6 +185,12 @@ namespace SmartFridge.UI.WinForms.Forms
         {
             // TODO: Открыть форму добавления продукта
             MessageBox.Show("Форма добавления продукта будет здесь");
+        }
+
+        private void BtnDeleteProduct_Click(object sender, EventArgs e)
+        {
+            // TODO: Открыть форму добавления продукта
+            MessageBox.Show("Убрали предмет");
         }
 
         private void BtnDecreaseTemp_Click(object sender, EventArgs e)
