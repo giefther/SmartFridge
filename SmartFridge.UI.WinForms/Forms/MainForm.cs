@@ -17,6 +17,16 @@ namespace SmartFridge.UI.WinForms.Forms
         private Panel centralContainer;
         private Panel bottomContainer;
 
+        // Контейнеры внутри TopContainer
+        private Panel headerContainer;
+        private Panel toolbarContainer;
+
+        // Относительные величины
+        private const int _topToFormPercentage = 21;
+        private const int _bottomToFormPercentage = 11;
+        private const int _headerToTopPercentage = 31;
+        private const int _toolbarToTopPercentage = 71;
+
         public MainForm(User user)
         {
             _currentUser = user ?? throw new ArgumentNullException(nameof(user));
@@ -37,8 +47,27 @@ namespace SmartFridge.UI.WinForms.Forms
         private void CreateTopContainer()
         {
             topContainer = new Panel().AsTopContainer();
-            topContainer.Height = CalculatePercentageHeight(20);
+            topContainer.Height = CalculatePercentageHeight(this.ClientSize.Height, _topToFormPercentage);
             this.Controls.Add(topContainer);
+
+            // Header и Toolbar внутри TopContainer
+            CreateHeaderContainer();
+            CreateToolbarContainer();
+        }
+
+        private void CreateHeaderContainer()
+        {
+            headerContainer = new Panel().AsHeaderContainer();
+            headerContainer.Height = CalculatePercentageHeight(topContainer.Height, _headerToTopPercentage); 
+            topContainer.Controls.Add(headerContainer);
+        }
+
+        private void CreateToolbarContainer()
+        {
+            toolbarContainer = new Panel().AsToolbarContainer();
+            toolbarContainer.Height = CalculatePercentageHeight(topContainer.Height, _toolbarToTopPercentage);
+            toolbarContainer.Dock = DockStyle.Bottom;
+            topContainer.Controls.Add(toolbarContainer);
         }
 
         private void CreateCentralContainer()
@@ -50,7 +79,7 @@ namespace SmartFridge.UI.WinForms.Forms
         private void CreateBottomContainer()
         {
             bottomContainer = new Panel().AsBottomContainer();
-            bottomContainer.Height = CalculatePercentageHeight(10);
+            bottomContainer.Height = CalculatePercentageHeight(this.ClientSize.Height, _bottomToFormPercentage);
             this.Controls.Add(bottomContainer);
         }
 
@@ -86,9 +115,15 @@ namespace SmartFridge.UI.WinForms.Forms
             bottomContainer.Controls.Add(bottomLabel);
         }
 
-        private int CalculatePercentageHeight(int percentage)
+        /// <summary>
+        /// Вычисляет относительную высоту
+        /// </summary>
+        /// <param name="fromHeight">Изначальная высота, относительно которой необходимо сделать вычисление</param>
+        /// <param name="percentage">Отношение в процентах к высоте</param>
+        /// <returns></returns>
+        private int CalculatePercentageHeight(int fromHeight, int percentage)
         {
-            return (int)(this.ClientSize.Height * (percentage / 100.0));
+            return (int)(fromHeight * (percentage / 100.0));
         }
 
         protected override void OnResize(EventArgs e)
@@ -97,10 +132,16 @@ namespace SmartFridge.UI.WinForms.Forms
 
             // Обновляем высоты при изменении размера формы
             if (topContainer != null)
-                topContainer.Height = CalculatePercentageHeight(20);
+                topContainer.Height = CalculatePercentageHeight(this.ClientSize.Height,_topToFormPercentage);
 
             if (bottomContainer != null)
-                bottomContainer.Height = CalculatePercentageHeight(10);
+                bottomContainer.Height = CalculatePercentageHeight(this.ClientSize.Height, _bottomToFormPercentage);
+
+            if (headerContainer != null)
+                headerContainer.Height = CalculatePercentageHeight(topContainer.Height, _headerToTopPercentage);
+
+            if (toolbarContainer != null)
+                toolbarContainer.Height = CalculatePercentageHeight(topContainer.Height, _toolbarToTopPercentage);
         }
     }
 }

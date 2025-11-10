@@ -20,6 +20,22 @@ namespace SmartFridge.UI.WinForms.Styles
             return panel;
         }
 
+        public static Panel AsHeaderContainer(this Panel panel)
+        {
+            panel.Dock = DockStyle.Top;
+            panel.BackColor = CustomFormStyles.PrimaryColor;
+            panel.Padding = new Padding(20, 10, 20, 10);
+            return panel;
+        }
+
+        public static Panel AsToolbarContainer(this Panel panel)
+        {
+            panel.Dock = DockStyle.Bottom;
+            panel.BackColor = CustomFormStyles.SecondaryColor;
+            panel.Padding = new Padding(15, 8, 15, 8);
+            return panel;
+        }
+
         public static Panel AsCentralContainer(this Panel panel)
         {
             panel.Dock = DockStyle.Fill;
