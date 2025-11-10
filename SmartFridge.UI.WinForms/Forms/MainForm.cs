@@ -38,6 +38,9 @@ namespace SmartFridge.UI.WinForms.Forms
         private Panel leftCentralContainer;
         private Panel mainContentCentralContainer;
         private Panel rightCentralContainer;
+        private DataGridView productsDataGrid;
+        private TextBox searchTextBox;
+        private Label statusLabel;
 
         // Относительные величины
         private const int _topToFormHeightPercentage = 21;
@@ -294,58 +297,128 @@ namespace SmartFridge.UI.WinForms.Forms
 
         private void CreateCentralContainers()
         {
-            // Левый контейнер - 30%
+
+            mainContentCentralContainer = new Panel { }.AsMainContentCentralContainer();
+            centralContainer.Controls.Add(mainContentCentralContainer);
+
             leftCentralContainer = new Panel
             {
                 Width = CalculatePercentageValue(centralContainer.Width, _leftCentralWidthPercentage)
             }.AsLeftCentralContainer();
             centralContainer.Controls.Add(leftCentralContainer);
 
-            // Правый контейнер - 20%
             rightCentralContainer = new Panel
             {
                 Width = CalculatePercentageValue(centralContainer.Width, _rightCentralWidthPercentage),
             }.AsRightCentralContainer();
             centralContainer.Controls.Add(rightCentralContainer);
 
-            // Центральный контейнер - 50% (оставшееся пространство)
-            mainContentCentralContainer = new Panel{}.AsMainContentCentralContainer();
-            centralContainer.Controls.Add(mainContentCentralContainer);
-
-            // Добавляем заглушки для визуализации
-            AddPlaceholderContent();
+            CreateMainContent();
         }
-        private void AddPlaceholderContent()
+        private void CreateMainContent()
         {
-            // Заглушка для левого контейнера
-            var leftLabel = new Label
+            // Панель для поиска и статуса
+            var topPanel = new Panel
             {
-                Text = "📊 Статистика и уведомления\n(30% ширины)",
                 Dock = DockStyle.Top,
-                TextAlign = ContentAlignment.MiddleCenter,
-                Height = 60
-            }.AsHeader();
-            leftCentralContainer.Controls.Add(leftLabel);
+                Height = 40,
+                Padding = new Padding(0, 5, 0, 5)
+            };
+            mainContentCentralContainer.Controls.Add(topPanel);
 
-            // Заглушка для центрального контейнера  
-            var centerLabel = new Label
+            // Поле поиска
+            searchTextBox = new TextBox
             {
-                Text = "📋 Список продуктов\n(50% ширины)",
-                Dock = DockStyle.Top,
-                TextAlign = ContentAlignment.MiddleCenter,
-                Height = 60
-            }.AsHeader();
-            mainContentCentralContainer.Controls.Add(centerLabel);
+                PlaceholderText = "🔍 Поиск продуктов...",
+                Dock = DockStyle.Left,
+                Width = 200
+            }.AsTextField();
+            searchTextBox.TextChanged += SearchTextBox_TextChanged;
+            topPanel.Controls.Add(searchTextBox);
 
-            // Заглушка для правого контейнера
-            var rightLabel = new Label
+            // Статус
+            statusLabel = new Label
             {
-                Text = "⚙️ Фильтры и сортировка\n(20% ширины)",
-                Dock = DockStyle.Top,
-                TextAlign = ContentAlignment.MiddleCenter,
-                Height = 60
-            }.AsHeader();
-            rightCentralContainer.Controls.Add(rightLabel);
+                Dock = DockStyle.Right,
+                TextAlign = ContentAlignment.MiddleRight,
+                AutoSize = false,
+                Width = 150
+            }.AsNormal();
+            topPanel.Controls.Add(statusLabel);
+
+            // DataGridView
+            productsDataGrid = new DataGridView
+            {
+                Dock = DockStyle.Fill,
+                ReadOnly = true,
+                AllowUserToAddRows = false,
+                AllowUserToDeleteRows = false,
+                SelectionMode = DataGridViewSelectionMode.FullRowSelect
+            }.AsTable();
+
+            SetupDataGridColumns();
+            mainContentCentralContainer.Controls.Add(productsDataGrid);
+
+            // Загружаем данные
+            LoadProducts();
+        }
+
+        private void SetupDataGridColumns()
+        {
+            productsDataGrid.Columns.Clear();
+
+            productsDataGrid.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Name",
+                HeaderText = "Название",
+                DataPropertyName = "Name",
+                Width = 150
+            });
+
+            productsDataGrid.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Category",
+                HeaderText = "Категория",
+                DataPropertyName = "Category.Name",
+                Width = 120
+            });
+
+            productsDataGrid.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "ExpirationDate",
+                HeaderText = "Срок годности",
+                DataPropertyName = "ExpirationDate",
+                Width = 120,
+                DefaultCellStyle = new DataGridViewCellStyle { Format = "dd.MM.yyyy" }
+            });
+
+            productsDataGrid.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Quantity",
+                HeaderText = "Количество",
+                DataPropertyName = "Quantity",
+                Width = 80
+            });
+
+            productsDataGrid.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Unit",
+                HeaderText = "Ед.",
+                DataPropertyName = "Unit",
+                Width = 50
+            });
+        }
+
+        private void LoadProducts()
+        {
+            var products = _productService.GetAllProducts();
+            productsDataGrid.DataSource = products.ToList();
+            UpdateStatusLabel(products.Count());
+        }
+
+        private void UpdateStatusLabel(int count)
+        {
+            statusLabel.Text = $"Показано: {count}";
         }
 
         private void CreateBottomContainer()
@@ -353,6 +426,14 @@ namespace SmartFridge.UI.WinForms.Forms
             bottomContainer = new Panel().AsBottomContainer();
             bottomContainer.Height = CalculatePercentageValue(this.ClientSize.Height, _bottomToFormHeightPercentage);
             this.Controls.Add(bottomContainer);
+        }
+
+        private void SearchTextBox_TextChanged(object sender, EventArgs e)
+        {
+            // TODO: Реализовать поиск
+            var searchText = searchTextBox.Text.ToLower();
+            // Пока просто обновляем статус
+            statusLabel.Text = $"Поиск: {searchText}";
         }
 
         private void ApplyStyles()
