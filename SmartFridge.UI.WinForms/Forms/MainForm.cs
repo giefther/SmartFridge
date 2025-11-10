@@ -88,10 +88,10 @@ namespace SmartFridge.UI.WinForms.Forms
 
         private void SetupContainers()
         {
-            CreateTopContainer();
-            CreateBottomContainer();
-            CreateCentralContainer();
-            CreateCentralContainers();
+            CreateCentralContainer();     
+            CreateCentralContainers();    
+            CreateTopContainer();         
+            CreateBottomContainer();      
         }
 
         private void CreateTopContainer()
