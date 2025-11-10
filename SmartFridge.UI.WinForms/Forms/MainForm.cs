@@ -19,6 +19,7 @@ namespace SmartFridge.UI.WinForms.Forms
         private ProductsGridControl productsGridControl;
         private HeaderControl headerControl;
         private ToolbarControl toolbarControl;
+        private StatisticsControl statisticsControl;
 
         // Основные контейнеры
         private Panel topContainer;
@@ -30,15 +31,6 @@ namespace SmartFridge.UI.WinForms.Forms
         private Panel mainContentCentralContainer;
         private Panel rightCentralContainer;
         private NotificationsControl notificationsControl;
-
-        // Содержимое LeftContainer
-        private Panel statContainer;
-        private Label statTitle;
-        // Лейблы статистики продуктов
-        private Label totalValueLabel;
-        private Label freshValueLabel;
-        private Label soonValueLabel;
-        private Label expiredValueLabel;
 
         // Относительные величины
         private const int _topToFormHeightPercentage = 21;
@@ -100,6 +92,14 @@ namespace SmartFridge.UI.WinForms.Forms
             notificationsControl = new NotificationsControl
             {
                 Dock = DockStyle.Fill
+            };
+        }
+        private void CreateStatisticsControl()
+        {
+            statisticsControl = new StatisticsControl
+            {
+                Dock = DockStyle.Top,
+                Height = CalculatePercentageValue(leftCentralContainer.Height, _statToLeftHeightPercentage)
             };
         }
         private void CreateHeaderControl()
@@ -215,103 +215,13 @@ namespace SmartFridge.UI.WinForms.Forms
 
         private void CreateLeftContent()
         {
-            // NotificationsControl - нижняя половина (50%)
+            // NotificationsControl - нижняя половина (50%) - ДОБАВЛЯЕМ ПЕРВЫМ
             CreateNotificationsControl();
             leftCentralContainer.Controls.Add(notificationsControl);
-            // StatContainer - верхняя половина (50%)
-            statContainer = new Panel
-            {
-                Dock = DockStyle.Top,
-                Height = CalculatePercentageValue(leftCentralContainer.Height, _statToLeftHeightPercentage),
-                BackColor = Color.White,
-                BorderStyle = BorderStyle.FixedSingle,
-                Padding = new Padding(10)
-            };
-            leftCentralContainer.Controls.Add(statContainer);
 
-            // Создаем содержимое статистики
-            CreateStatContent();
-        }
-        private void CreateStatItem(Panel parent, string title, string value, Color color, int topPosition, ref Label valueLabel)
-        {
-            var itemPanel = new Panel
-            {
-                Height = 25,
-                Dock = DockStyle.Top,
-                Margin = new Padding(0, 2, 0, 2)
-            };
-            parent.Controls.Add(itemPanel);
-
-            // Цветной символ ●
-            var colorLabel = new Label
-            {
-                Text = "●",
-                Location = new Point(5, 4),
-                Size = new Size(15, 15),
-                Font = new Font("Segoe UI", 10),
-                ForeColor = color,
-                TextAlign = ContentAlignment.MiddleCenter
-            };
-            itemPanel.Controls.Add(colorLabel);
-
-            // Название категории
-            var titleLabel = new Label
-            {
-                Text = title,
-                Location = new Point(25, 4),
-                Size = new Size(100, 18),
-                Font = CustomFormStyles.SmallFont,
-                ForeColor = CustomFormStyles.DarkColor,
-                TextAlign = ContentAlignment.MiddleLeft
-            };
-            itemPanel.Controls.Add(titleLabel);
-
-            // Значение (сохраняем ссылку)
-            valueLabel = new Label
-            {
-                Text = value,
-                Location = new Point(120, 4),
-                Size = new Size(40, 18),
-                Font = CustomFormStyles.NormalFont,
-                ForeColor = CustomFormStyles.DarkColor,
-                TextAlign = ContentAlignment.MiddleRight
-            };
-            itemPanel.Controls.Add(valueLabel);
-        }
-        private void CreateStatContent()
-        {
-            // Очищаем контейнер
-            statContainer.Controls.Clear();
-
-            // Панель для статистики
-            var statsPanel = new Panel
-            {
-                Dock = DockStyle.Fill,
-                Padding = new Padding(10, 5, 10, 5)
-            };
-            statContainer.Controls.Add(statsPanel);
-
-            // Заголовок
-            statTitle = new Label
-            {
-                Text = "📊 Статистика",
-                Dock = DockStyle.Top,
-                Height = 30,
-                TextAlign = ContentAlignment.MiddleLeft,
-                Font = CustomFormStyles.HeaderFont,
-                ForeColor = CustomFormStyles.DarkColor
-            };
-            statContainer.Controls.Add(statTitle);
-
-
-            // Создаем элементы статистики и сохраняем ссылки на Label'ы
-            CreateStatItem(statsPanel, "Всего", "0", Color.Gray, 0, ref totalValueLabel);
-            CreateStatItem(statsPanel, "Свежих", "0", Color.Green, 25, ref freshValueLabel);
-            CreateStatItem(statsPanel, "Скоро истекает", "0", Color.Orange, 50, ref soonValueLabel);
-            CreateStatItem(statsPanel, "Просрочено", "0", Color.Red, 75, ref expiredValueLabel);
-
-            // Обновляем статистику при загрузке
-            UpdateStatistics();
+            // StatisticsControl - верхняя половина (50%) - ДОБАВЛЯЕМ ВТОРЫМ
+            CreateStatisticsControl();
+            leftCentralContainer.Controls.Add(statisticsControl);
         }
 
         private void UpdateStatistics()
@@ -320,17 +230,12 @@ namespace SmartFridge.UI.WinForms.Forms
 
             try
             {
-                // Используем методы сервиса для подсчета
                 var total = _productService.GetAllProducts().Count();
                 var expired = _productService.GetExpiredProducts().Count();
                 var soon = _productService.GetExpiringSoonProducts(3).Count();
                 var fresh = total - expired - soon;
 
-                // ✅ Просто обновляем текст Label'ов через сохраненные ссылки
-                if (totalValueLabel != null) totalValueLabel.Text = total.ToString();
-                if (freshValueLabel != null) freshValueLabel.Text = fresh.ToString();
-                if (soonValueLabel != null) soonValueLabel.Text = soon.ToString();
-                if (expiredValueLabel != null) expiredValueLabel.Text = expired.ToString();
+                statisticsControl?.UpdateStatistics(total, fresh, soon, expired);
             }
             catch (Exception ex)
             {
@@ -369,12 +274,12 @@ namespace SmartFridge.UI.WinForms.Forms
 
             // Обновляем высоты при изменении размера формы
             if (topContainer != null)
-                topContainer.Height = CalculatePercentageValue(this.ClientSize.Height,_topToFormHeightPercentage);
+                topContainer.Height = CalculatePercentageValue(this.ClientSize.Height, _topToFormHeightPercentage);
 
             if (bottomContainer != null)
                 bottomContainer.Height = CalculatePercentageValue(this.ClientSize.Height, _bottomToFormHeightPercentage);
 
-            if(headerControl != null)
+            if (headerControl != null)
                 headerControl.Height = CalculatePercentageValue(topContainer.Height, _headerToTopHeightPercentage);
 
             if (toolbarControl != null)
@@ -385,10 +290,8 @@ namespace SmartFridge.UI.WinForms.Forms
 
             if (rightCentralContainer != null)
                 rightCentralContainer.Width = CalculatePercentageValue(centralContainer.Width, _rightCentralWidthPercentage);
-            if (statContainer != null && leftCentralContainer != null)
-            {
-                statContainer.Height = CalculatePercentageValue(leftCentralContainer.Height, _statToLeftHeightPercentage);
-            }
+            if (statisticsControl != null && leftCentralContainer != null)
+                statisticsControl.Height = CalculatePercentageValue(leftCentralContainer.Height, _statToLeftHeightPercentage);
         }
     }
 }
