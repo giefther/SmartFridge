@@ -49,6 +49,7 @@ namespace SmartFridge.UI.WinForms.Forms
             InitializeTimeTimer();
             SetupContainers();
             ApplyStyles();
+            CreateContent();
         }
 
         private void InitializeTimeTimer()
@@ -111,6 +112,89 @@ namespace SmartFridge.UI.WinForms.Forms
             topContainer.Controls.Add(toolbarContainer);
         }
 
+        private void CreateToolbarContent()
+        {
+            CreateLeftToolbarContainer();
+            CreateRightToolbarContainer();
+        }
+
+        private void CreateLeftToolbarContainer()
+        {
+            leftToolbarContainer = new Panel
+            {
+                Dock = DockStyle.Left,
+                Width = 350,
+                Padding = new Padding(20, 8, 0, 8)
+            };
+            toolbarContainer.Controls.Add(leftToolbarContainer);
+
+            // Кнопка уменьшения температуры
+            btnDecreaseTemp = new Button
+            {
+                Text = "❄️ Уменьшить",
+                Size = new Size(165, 45),
+                Location = new Point(0, 0)
+            }.AsLight();
+            leftToolbarContainer.Controls.Add(btnDecreaseTemp);
+
+            // Кнопка увеличения температуры
+            btnIncreaseTemp = new Button
+            {
+                Text = "☀️ Увеличить",
+                Size = new Size(165, 45),
+                Location = new Point(175, 0)
+            }.AsLight();
+            leftToolbarContainer.Controls.Add(btnIncreaseTemp);
+        }
+
+        private void CreateRightToolbarContainer()
+        {
+            rightToolbarContainer = new Panel
+            {
+                Dock = DockStyle.Right,
+                Width = 250,
+                Padding = new Padding(0, 8, 20, 8)
+            };
+            toolbarContainer.Controls.Add(rightToolbarContainer);
+
+            // Кнопка добавления продукта
+            btnAddProduct = new Button
+            {
+                Text = "➕ Добавить",
+                Size = new Size(110, 30),
+                Location = new Point(0, 0)
+            }.AsSuccess(); // Зеленая для позитивного действия
+            btnAddProduct.Click += BtnAddProduct_Click;
+            rightToolbarContainer.Controls.Add(btnAddProduct);
+
+            // Кнопка удаления продукта
+            btnDeleteProduct = new Button
+            {
+                Text = "➖ Удалить",
+                Size = new Size(110, 30),
+                Location = new Point(120, 0)
+            }.AsDanger(); // Красная для опасного действия
+            rightToolbarContainer.Controls.Add(btnDeleteProduct);
+        }
+
+        // Обработчики событий (заглушки)
+        private void BtnAddProduct_Click(object sender, EventArgs e)
+        {
+            // TODO: Открыть форму добавления продукта
+            MessageBox.Show("Форма добавления продукта будет здесь");
+        }
+
+        private void BtnDecreaseTemp_Click(object sender, EventArgs e)
+        {
+            // TODO: Уменьшить температуру
+            MessageBox.Show("Температура уменьшена");
+        }
+
+        private void BtnIncreaseTemp_Click(object sender, EventArgs e)
+        {
+            // TODO: Увеличить температуру  
+            MessageBox.Show("Температура увеличена");
+        }
 
         private void CreateHeaderContent()
         {
@@ -169,7 +253,7 @@ namespace SmartFridge.UI.WinForms.Forms
             btnLogout = new Button
             {
                 Text = "Выйти", 
-                Size = new Size(80, 30), 
+                Size = new Size(80, 45), 
                 Location = new Point(160, 3)
             }.AsLight();
             btnLogout.Click += BtnLogout_Click;
@@ -201,9 +285,12 @@ namespace SmartFridge.UI.WinForms.Forms
             // Стиль формы
             this.AsMainForm();
             this.Text = $"Умный холодильник - {_currentUser.Username}";
+        }
 
-            // Убираем временные метки и добавляем контент Header
+        private void CreateContent()
+        {
             CreateHeaderContent();
+            CreateToolbarContent();
         }
 
         /// <summary>
