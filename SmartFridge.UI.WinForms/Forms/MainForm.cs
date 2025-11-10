@@ -42,6 +42,8 @@ namespace SmartFridge.UI.WinForms.Forms
         private DataGridView productsDataGrid;
         private TextBox searchTextBox;
         private Label statusLabel;
+        private List<Product> _allProducts; // Все продукты для поиска
+        private List<Product> _filteredProducts; // Отфильтрованные продукты для поиска
 
         // Относительные величины
         private const int _topToFormHeightPercentage = 21;
@@ -490,14 +492,18 @@ namespace SmartFridge.UI.WinForms.Forms
 
         private void LoadProducts()
         {
-            var products = _productService.GetAllProducts();
-            productsDataGrid.DataSource = products.ToList();
-            UpdateStatusLabel(products.Count());
+            _allProducts = _productService.GetAllProducts().ToList();
+            _filteredProducts = new List<Product>(_allProducts);
+            productsDataGrid.DataSource = _filteredProducts;
+            UpdateStatusLabel(_filteredProducts.Count);
         }
 
         private void UpdateStatusLabel(int count)
         {
-            statusLabel.Text = $"Показано: {count}";
+            if (string.IsNullOrEmpty(searchTextBox.Text))
+                statusLabel.Text = $"Всего продуктов: {count}";
+            else
+                statusLabel.Text = $"Найдено: {count}";
         }
 
         private void CreateBottomContainer()
@@ -509,10 +515,22 @@ namespace SmartFridge.UI.WinForms.Forms
 
         private void SearchTextBox_TextChanged(object sender, EventArgs e)
         {
-            // TODO: Реализовать поиск
-            var searchText = searchTextBox.Text.ToLower();
-            // Пока просто обновляем статус
-            statusLabel.Text = $"Поиск: {searchText}";
+            var searchText = searchTextBox.Text.Trim().ToLower();
+
+            if (string.IsNullOrEmpty(searchText))
+            {
+                _filteredProducts = new List<Product>(_allProducts);
+            }
+            else
+            {
+                _filteredProducts = _allProducts
+                    .Where(p => p.Name.ToLower().Contains(searchText))
+                    .ToList();
+            }
+
+            // Обновляем таблицу
+            productsDataGrid.DataSource = _filteredProducts;
+            UpdateStatusLabel(_filteredProducts.Count);
         }
 
         private void ApplyStyles()
