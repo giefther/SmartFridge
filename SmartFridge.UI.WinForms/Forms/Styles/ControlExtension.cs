@@ -62,7 +62,14 @@ namespace SmartFridge.UI.WinForms.Styles
             panel.Padding = new Padding(15, 8, 15, 8);
             return panel;
         }
-
+        // ===== RadioButton =====
+        public static RadioButton AsCheckbox(this RadioButton radioButton)
+        {
+            radioButton.Font = CustomFormStyles.NormalFont;
+            radioButton.ForeColor = CustomFormStyles.DarkColor;
+            radioButton.AutoSize = true;
+            return radioButton;
+        }
         public static Panel AsCentralContainer(this Panel panel)
         {
             panel.Dock = DockStyle.Fill;

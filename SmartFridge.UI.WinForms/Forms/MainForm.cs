@@ -441,6 +441,51 @@ namespace SmartFridge.UI.WinForms.Forms
                 DataPropertyName = "Unit",
                 Width = 50
             });
+            productsDataGrid.RowPrePaint += ProductsDataGrid_RowPrePaint;
+        }
+
+        private void ProductsDataGrid_RowPrePaint(object sender, DataGridViewRowPrePaintEventArgs e)
+        {
+            if (e.RowIndex < 0 || e.RowIndex >= productsDataGrid.Rows.Count)
+                return;
+
+            var row = productsDataGrid.Rows[e.RowIndex];
+            var product = row.DataBoundItem as Product;
+
+            if (product == null)
+                return;
+
+            // Определяем цвет в зависимости от срока годности
+            Color backColor = GetProductRowColor(product);
+            row.DefaultCellStyle.BackColor = backColor;
+
+            // Делаем текст контрастным
+            row.DefaultCellStyle.ForeColor = IsLightColor(backColor) ? Color.Black : Color.White;
+        }
+
+        private Color GetProductRowColor(Product product)
+        {
+            var daysUntilExpiration = (product.ExpirationDate - DateTime.Today).TotalDays;
+
+            if (daysUntilExpiration < 0)
+            {
+                return Color.FromArgb(255, 200, 200); // Светло-красный
+            }
+            else if (daysUntilExpiration <= 3)
+            {
+                return Color.FromArgb(255, 255, 200); // Светло-жёлтый
+            }
+            else
+            {
+                return Color.FromArgb(200, 255, 200); // Светло-зелёный
+            }
+        }
+
+        private bool IsLightColor(Color color)
+        {
+            // Определяем, светлый ли цвет (для выбора цвета текста)
+            var brightness = (color.R * 0.299 + color.G * 0.587 + color.B * 0.114) / 255;
+            return brightness > 0.5;
         }
 
         private void LoadProducts()
