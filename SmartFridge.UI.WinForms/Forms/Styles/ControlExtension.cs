@@ -24,7 +24,7 @@ namespace SmartFridge.UI.WinForms.Styles
         {
             panel.Dock = DockStyle.Top;
             panel.BackColor = CustomFormStyles.PrimaryColor;
-            panel.Padding = new Padding(20, 10, 20, 10);
+            panel.Padding = new Padding(20, 5, 20, 10);
             return panel;
         }
 
@@ -152,6 +152,18 @@ namespace SmartFridge.UI.WinForms.Styles
         }
 
         // ===== Label =====
+
+        public static Label WithWhiteText(this Label label)
+        {
+            label.ForeColor = Color.White;
+            return label;
+        }
+
+        public static Button WithWhiteText(this Button button)
+        {
+            button.ForeColor = Color.White;
+            return button;
+        }
 
         public static Label AsTitle(this Label label)
         {

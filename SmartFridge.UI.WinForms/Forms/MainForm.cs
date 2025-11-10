@@ -11,21 +11,34 @@ namespace SmartFridge.UI.WinForms.Forms
     {
         private readonly User _currentUser;
         private readonly IProductService _productService;
+        private System.Windows.Forms.Timer timeTimer;
 
         // Основные контейнеры
         private Panel topContainer;
         private Panel centralContainer;
         private Panel bottomContainer;
 
-        // Контейнеры внутри TopContainer
+        // Содержимое TopContainer
         private Panel headerContainer;
         private Panel toolbarContainer;
+        private Panel leftHeaderContainer;
+        private Panel rightHeaderContainer;
+        private Label lblTime;
+        private Label lblTemperature;
+        private Label lblUsername;
+        private Button btnLogout;
+        private Panel leftToolbarContainer;
+        private Panel rightToolbarContainer;
+        private Button btnDecreaseTemp;
+        private Button btnIncreaseTemp;
+        private Button btnAddProduct;
+        private Button btnDeleteProduct;
 
         // Относительные величины
         private const int _topToFormPercentage = 21;
         private const int _bottomToFormPercentage = 11;
-        private const int _headerToTopPercentage = 31;
-        private const int _toolbarToTopPercentage = 71;
+        private const int _headerToTopPercentage = 51;
+        private const int _toolbarToTopPercentage = 51;
 
         public MainForm(User user)
         {
@@ -33,8 +46,36 @@ namespace SmartFridge.UI.WinForms.Forms
             _productService = CompositionRoot.GetProductService(user);
 
             InitializeComponent();
+            InitializeTimeTimer();
             SetupContainers();
             ApplyStyles();
+        }
+
+        private void InitializeTimeTimer()
+        {
+            timeTimer = new System.Windows.Forms.Timer();
+            timeTimer.Interval = 1000; // 1 секунда
+            timeTimer.Tick += TimeTimer_Tick;
+            timeTimer.Start();
+            UpdateTime(); // Первоначальное обновление
+        }
+        private void TimeTimer_Tick(object sender, EventArgs e)
+        {
+            UpdateTime();
+        }
+
+        private void UpdateTime()
+        {
+            if (lblTime != null && !lblTime.IsDisposed)
+            {
+                lblTime.Text = $"🕐 {DateTime.Now:HH:mm}";
+            }
+        }
+        protected override void OnFormClosed(FormClosedEventArgs e)
+        {
+            timeTimer?.Stop();
+            timeTimer?.Dispose();
+            base.OnFormClosed(e);
         }
 
         private void SetupContainers()
@@ -70,6 +111,78 @@ namespace SmartFridge.UI.WinForms.Forms
             topContainer.Controls.Add(toolbarContainer);
         }
 
+
+        private void CreateHeaderContent()
+        {
+            CreateLeftHeaderContainer();
+            CreateRightHeaderContainer();
+        }
+
+        private void CreateLeftHeaderContainer()
+        {
+            leftHeaderContainer = new Panel
+            {
+                Dock = DockStyle.Left,
+                Width = 200,
+                Padding = new Padding(20, 5, 0, 5)
+            };
+            headerContainer.Controls.Add(leftHeaderContainer);
+
+            // Время
+            lblTime = new Label
+            {
+                Text = "🕐 14:30",
+                AutoSize = true,
+                Location = new Point(0, 0)
+            }.AsHeader().WithWhiteText();
+            leftHeaderContainer.Controls.Add(lblTime);
+
+            // Температура
+            lblTemperature = new Label
+            {
+                Text = "❄️ 0°C",
+                AutoSize = true,
+                Location = new Point(0, 25)
+            }.AsNormal().WithWhiteText();
+            leftHeaderContainer.Controls.Add(lblTemperature);
+        }
+
+        private void CreateRightHeaderContainer()
+        {
+            rightHeaderContainer = new Panel
+            {
+                Dock = DockStyle.Right,
+                Width = 250,    
+                Padding = new Padding(0, 10, 20, 10) 
+            };
+            headerContainer.Controls.Add(rightHeaderContainer);
+
+            lblUsername = new Label
+            {
+                Text = $"👤{_currentUser.Username}",
+                AutoSize = true,
+                Location = new Point(35, 8), 
+                Font = CustomFormStyles.HeaderFont 
+            }.WithWhiteText();
+            rightHeaderContainer.Controls.Add(lblUsername);
+
+            btnLogout = new Button
+            {
+                Text = "Выйти", 
+                Size = new Size(80, 30), 
+                Location = new Point(160, 3)
+            }.AsLight();
+            btnLogout.Click += BtnLogout_Click;
+            rightHeaderContainer.Controls.Add(btnLogout);
+        }
+
+        // Обработчик выхода
+        private void BtnLogout_Click(object sender, EventArgs e)
+        {
+            CompositionRoot.ClearUserCache(_currentUser.Id);
+            Application.Restart();
+        }
+
         private void CreateCentralContainer()
         {
             centralContainer = new Panel().AsCentralContainer();
@@ -89,30 +202,8 @@ namespace SmartFridge.UI.WinForms.Forms
             this.AsMainForm();
             this.Text = $"Умный холодильник - {_currentUser.Username}";
 
-            // Добавляем текст для идентификации контейнеров (временный)
-            AddContainerLabels();
-        }
-
-        private void AddContainerLabels()
-        {
-            // Метки для визуального отличия контейнеров (убрать в продакшене)
-            var topLabel = new Label
-            {
-                Text = "TOP CONTAINER (20%) - Будут: Header + Toolbar"
-            }.AsTopContainerLabel();
-            topContainer.Controls.Add(topLabel);
-
-            var centralLabel = new Label
-            {
-                Text = "CENTRAL CONTAINER (70%) - Будут: Статистика + Список продуктов"
-            }.AsCentralContainerLabel();
-            centralContainer.Controls.Add(centralLabel);
-
-            var bottomLabel = new Label
-            {
-                Text = "BOTTOM CONTAINER (10%) - Будет: Footer"
-            }.AsBottomContainerLabel();
-            bottomContainer.Controls.Add(bottomLabel);
+            // Убираем временные метки и добавляем контент Header
+            CreateHeaderContent();
         }
 
         /// <summary>
