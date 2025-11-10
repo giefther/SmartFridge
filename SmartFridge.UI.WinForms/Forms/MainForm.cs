@@ -49,6 +49,11 @@ namespace SmartFridge.UI.WinForms.Forms
         private Panel notificationsContainer;
         private Label statTitle;
         private Label notificationsTitle;
+        // Лейблы статистики продуктов
+        private Label totalValueLabel;
+        private Label freshValueLabel;
+        private Label soonValueLabel;
+        private Label expiredValueLabel;
 
         // Относительные величины
         private const int _topToFormHeightPercentage = 21;
@@ -407,18 +412,110 @@ namespace SmartFridge.UI.WinForms.Forms
             CreateStatContent();
             CreateNotificationsContent();
         }
+        private void CreateStatItem(Panel parent, string title, string value, Color color, int topPosition, ref Label valueLabel)
+        {
+            var itemPanel = new Panel
+            {
+                Height = 25,
+                Dock = DockStyle.Top,
+                Margin = new Padding(0, 2, 0, 2)
+            };
+            parent.Controls.Add(itemPanel);
+
+            // Цветной символ ●
+            var colorLabel = new Label
+            {
+                Text = "●",
+                Location = new Point(5, 4),
+                Size = new Size(15, 15),
+                Font = new Font("Segoe UI", 10),
+                ForeColor = color,
+                TextAlign = ContentAlignment.MiddleCenter
+            };
+            itemPanel.Controls.Add(colorLabel);
+
+            // Название категории
+            var titleLabel = new Label
+            {
+                Text = title,
+                Location = new Point(25, 4),
+                Size = new Size(100, 18),
+                Font = CustomFormStyles.SmallFont,
+                ForeColor = CustomFormStyles.DarkColor,
+                TextAlign = ContentAlignment.MiddleLeft
+            };
+            itemPanel.Controls.Add(titleLabel);
+
+            // Значение (сохраняем ссылку)
+            valueLabel = new Label
+            {
+                Text = value,
+                Location = new Point(120, 4),
+                Size = new Size(40, 18),
+                Font = CustomFormStyles.NormalFont,
+                ForeColor = CustomFormStyles.DarkColor,
+                TextAlign = ContentAlignment.MiddleRight
+            };
+            itemPanel.Controls.Add(valueLabel);
+        }
         private void CreateStatContent()
         {
-            // Заглушка для статистики
-            var statPlaceholder = new Label
+            // Очищаем контейнер
+            statContainer.Controls.Clear();
+
+            // Панель для статистики
+            var statsPanel = new Panel
             {
-                Text = "Здесь будет статистика продуктов",
                 Dock = DockStyle.Fill,
-                TextAlign = ContentAlignment.MiddleCenter,
-                Font = CustomFormStyles.NormalFont,
-                ForeColor = CustomFormStyles.SecondaryColor
+                Padding = new Padding(10, 5, 10, 5)
             };
-            statContainer.Controls.Add(statPlaceholder);
+            statContainer.Controls.Add(statsPanel);
+
+            // Заголовок
+            statTitle = new Label
+            {
+                Text = "📊 Статистика",
+                Dock = DockStyle.Top,
+                Height = 30,
+                TextAlign = ContentAlignment.MiddleLeft,
+                Font = CustomFormStyles.HeaderFont,
+                ForeColor = CustomFormStyles.DarkColor
+            };
+            statContainer.Controls.Add(statTitle);
+
+
+            // Создаем элементы статистики и сохраняем ссылки на Label'ы
+            CreateStatItem(statsPanel, "Всего", "0", Color.Gray, 0, ref totalValueLabel);
+            CreateStatItem(statsPanel, "Свежих", "0", Color.Green, 25, ref freshValueLabel);
+            CreateStatItem(statsPanel, "Скоро истекает", "0", Color.Orange, 50, ref soonValueLabel);
+            CreateStatItem(statsPanel, "Просрочено", "0", Color.Red, 75, ref expiredValueLabel);
+
+            // Обновляем статистику при загрузке
+            UpdateStatistics();
+        }
+
+        private void UpdateStatistics()
+        {
+            if (_productService == null) return;
+
+            try
+            {
+                // Используем методы сервиса для подсчета
+                var total = _productService.GetAllProducts().Count();
+                var expired = _productService.GetExpiredProducts().Count();
+                var soon = _productService.GetExpiringSoonProducts(3).Count();
+                var fresh = total - expired - soon;
+
+                // ✅ Просто обновляем текст Label'ов через сохраненные ссылки
+                if (totalValueLabel != null) totalValueLabel.Text = total.ToString();
+                if (freshValueLabel != null) freshValueLabel.Text = fresh.ToString();
+                if (soonValueLabel != null) soonValueLabel.Text = soon.ToString();
+                if (expiredValueLabel != null) expiredValueLabel.Text = expired.ToString();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка обновления статистики: {ex.Message}");
+            }
         }
 
         private void CreateNotificationsContent()
@@ -597,6 +694,7 @@ namespace SmartFridge.UI.WinForms.Forms
             _filteredProducts = new List<Product>(_allProducts);
             productsDataGrid.DataSource = _filteredProducts;
             UpdateStatusLabel(_filteredProducts.Count);
+            UpdateStatistics();
         }
 
         private void UpdateStatusLabel(int count)
