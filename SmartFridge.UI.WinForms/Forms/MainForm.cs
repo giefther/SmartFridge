@@ -15,7 +15,9 @@ namespace SmartFridge.UI.WinForms.Forms
         private readonly IProductService _productService;
         private System.Windows.Forms.Timer timeTimer;
 
+        // Контроллы
         private ProductsGridControl productsGridControl;
+        private HeaderControl headerControl;
 
         // Основные контейнеры
         private Panel topContainer;
@@ -23,14 +25,7 @@ namespace SmartFridge.UI.WinForms.Forms
         private Panel bottomContainer;
 
         // Содержимое TopContainer
-        private Panel headerContainer;
         private Panel toolbarContainer;
-        private Panel leftHeaderContainer;
-        private Panel rightHeaderContainer;
-        private Label lblTime;
-        private Label lblTemperature;
-        private Label lblUsername;
-        private Button btnLogout;
         private Panel leftToolbarContainer;
         private Panel rightToolbarContainer;
         private Button btnDecreaseTemp;
@@ -70,37 +65,9 @@ namespace SmartFridge.UI.WinForms.Forms
             _productService = CompositionRoot.GetProductService(user);
 
             InitializeComponent();
-            InitializeTimeTimer();
             SetupContainers();
             ApplyStyles();
             LoadProducts();
-        }
-
-        private void InitializeTimeTimer()
-        {
-            timeTimer = new System.Windows.Forms.Timer();
-            timeTimer.Interval = 1000; // 1 секунда
-            timeTimer.Tick += TimeTimer_Tick;
-            timeTimer.Start();
-            UpdateTime(); // Первоначальное обновление
-        }
-        private void TimeTimer_Tick(object sender, EventArgs e)
-        {
-            UpdateTime();
-        }
-
-        private void UpdateTime()
-        {
-            if (lblTime != null && !lblTime.IsDisposed)
-            {
-                lblTime.Text = $"🕐 {DateTime.Now:HH:mm}";
-            }
-        }
-        protected override void OnFormClosed(FormClosedEventArgs e)
-        {
-            timeTimer?.Stop();
-            timeTimer?.Dispose();
-            base.OnFormClosed(e);
         }
 
         private void SetupContainers()
@@ -118,17 +85,26 @@ namespace SmartFridge.UI.WinForms.Forms
             this.Controls.Add(topContainer);
 
             // Header и Toolbar внутри TopContainer
-            CreateHeaderContainer();
+            CreateHeaderControl();    
             CreateToolbarContainer();
-            CreateHeaderContent();
             CreateToolbarContent();
         }
 
-        private void CreateHeaderContainer()
+        private void CreateHeaderControl()
         {
-            headerContainer = new Panel().AsHeaderContainer();
-            headerContainer.Height = CalculatePercentageValue(topContainer.Height, _headerToTopHeightPercentage); 
-            topContainer.Controls.Add(headerContainer);
+            headerControl = new HeaderControl(_currentUser)
+            {
+                Height = CalculatePercentageValue(topContainer.Height, _headerToTopHeightPercentage),
+                Dock = DockStyle.Top
+            };
+            headerControl.LogoutClicked += (s, e) => Logout();
+            topContainer.Controls.Add(headerControl);
+        }
+
+        private void Logout()
+        {
+            CompositionRoot.ClearUserCache(_currentUser.Id);
+            Application.Restart();
         }
 
         private void CreateToolbarContainer()
@@ -259,77 +235,6 @@ namespace SmartFridge.UI.WinForms.Forms
         {
             // TODO: Увеличить температуру  
             MessageBox.Show("Температура увеличена");
-        }
-
-        private void CreateHeaderContent()
-        {
-            CreateLeftHeaderContainer();
-            CreateRightHeaderContainer();
-        }
-
-        private void CreateLeftHeaderContainer()
-        {
-            leftHeaderContainer = new Panel
-            {
-                Dock = DockStyle.Left,
-                Width = 200,
-                Padding = new Padding(20, 5, 0, 5)
-            };
-            headerContainer.Controls.Add(leftHeaderContainer);
-
-            // Время
-            lblTime = new Label
-            {
-                Text = "🕐 14:30",
-                AutoSize = true,
-                Location = new Point(0, 0)
-            }.AsHeader().WithWhiteText();
-            leftHeaderContainer.Controls.Add(lblTime);
-
-            // Температура
-            lblTemperature = new Label
-            {
-                Text = "❄️ 0°C",
-                AutoSize = true,
-                Location = new Point(0, 25)
-            }.AsNormal().WithWhiteText();
-            leftHeaderContainer.Controls.Add(lblTemperature);
-        }
-
-        private void CreateRightHeaderContainer()
-        {
-            rightHeaderContainer = new Panel
-            {
-                Dock = DockStyle.Right,
-                Width = 250,    
-                Padding = new Padding(0, 10, 20, 10) 
-            };
-            headerContainer.Controls.Add(rightHeaderContainer);
-
-            lblUsername = new Label
-            {
-                Text = $"👤{_currentUser.Username}",
-                AutoSize = true,
-                Location = new Point(35, 8), 
-                Font = CustomFormStyles.HeaderFont 
-            }.WithWhiteText();
-            rightHeaderContainer.Controls.Add(lblUsername);
-
-            btnLogout = new Button
-            {
-                Text = "Выйти", 
-                Size = new Size(80, 45), 
-                Location = new Point(160, 3)
-            }.AsLight();
-            btnLogout.Click += BtnLogout_Click;
-            rightHeaderContainer.Controls.Add(btnLogout);
-        }
-
-        // Обработчик выхода
-        private void BtnLogout_Click(object sender, EventArgs e)
-        {
-            CompositionRoot.ClearUserCache(_currentUser.Id);
-            Application.Restart();
         }
 
         private void CreateCentralContainer()
@@ -580,8 +485,8 @@ namespace SmartFridge.UI.WinForms.Forms
             if (bottomContainer != null)
                 bottomContainer.Height = CalculatePercentageValue(this.ClientSize.Height, _bottomToFormHeightPercentage);
 
-            if (headerContainer != null)
-                headerContainer.Height = CalculatePercentageValue(topContainer.Height, _headerToTopHeightPercentage);
+            if(headerControl != null)
+                headerControl.Height = CalculatePercentageValue(topContainer.Height, _headerToTopHeightPercentage);
 
             if (toolbarContainer != null)
                 toolbarContainer.Height = CalculatePercentageValue(topContainer.Height, _toolbarToTopHeightPercentage);
