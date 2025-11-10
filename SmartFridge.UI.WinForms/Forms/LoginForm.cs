@@ -78,7 +78,7 @@ namespace SmartFridge.UI.WinForms.Forms
             if (user != null)
             {
                 ShowSuccess($"Добро пожаловать, {user.Username}!");
-                var mainForm = new MainForm();
+                var mainForm = new MainForm(user);
                 mainForm.Show();
                 this.Hide();
             }
