@@ -179,7 +179,7 @@ namespace SmartFridge.UI.WinForms.Forms
                 Text = "➕ Добавить",
                 Size = new Size(110, 45),
                 Location = new Point(0, 0)
-            }.AsSuccess(); // Зеленая для позитивного действия
+            }.AsSuccess();
             btnAddProduct.Click += BtnAddProduct_Click;
             rightToolbarContainer.Controls.Add(btnAddProduct);
 
@@ -188,8 +188,9 @@ namespace SmartFridge.UI.WinForms.Forms
             {
                 Text = "➖ Удалить",
                 Size = new Size(110, 45),
-                Location = new Point(120, 0)
-            }.AsDanger(); // Красная для опасного действия
+                Location = new Point(120, 0),
+                Enabled = false // Изначально неактивна
+            }.AsDanger();
             btnDeleteProduct.Click += BtnDeleteProduct_Click;
             rightToolbarContainer.Controls.Add(btnDeleteProduct);
         }
@@ -210,8 +211,30 @@ namespace SmartFridge.UI.WinForms.Forms
 
         private void BtnDeleteProduct_Click(object sender, EventArgs e)
         {
-            // TODO: Открыть форму добавления продукта
-            MessageBox.Show("Убрали предмет");
+            if (productsDataGrid.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Выберите продукт для удаления", "Информация",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            var selectedRow = productsDataGrid.SelectedRows[0];
+            var product = selectedRow.DataBoundItem as Product;
+
+            if (product == null)
+                return;
+
+            var productName = product.Name;
+            try
+            {
+                _productService.DeleteProduct(product.Id);
+                LoadProducts();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при удалении продукта: {ex.Message}", "Ошибка",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void BtnDecreaseTemp_Click(object sender, EventArgs e)
@@ -367,10 +390,13 @@ namespace SmartFridge.UI.WinForms.Forms
             }.AsNormal();
             topPanel.Controls.Add(statusLabel);
 
-            // Загружаем данные
             LoadProducts();
+            productsDataGrid.SelectionChanged += ProductsDataGrid_SelectionChanged;
         }
-
+        private void ProductsDataGrid_SelectionChanged(object sender, EventArgs e)
+        {
+            btnDeleteProduct.Enabled = productsDataGrid.SelectedRows.Count > 0;
+        }
         private void SetupDataGridColumns()
         {
             productsDataGrid.Columns.Clear();
