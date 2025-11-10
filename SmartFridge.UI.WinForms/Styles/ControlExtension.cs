@@ -8,6 +8,26 @@ namespace SmartFridge.UI.WinForms.Styles
     /// </summary>
     public static class ControlExtensions
     {
+        // ===== UserControl =====
+        public static UserControl AsHeaderContainer(this UserControl control)
+        {
+            control.BackColor = CustomFormStyles.DarkColor;
+            control.Padding = new Padding(20, 5, 20, 10);
+            return control;
+        }
+
+        public static UserControl AsToolbarContainer(this UserControl control)
+        {
+            control.BackColor = CustomFormStyles.SecondaryColor;
+            control.Padding = new Padding(15, 8, 15, 8);
+            return control;
+        }
+
+        public static UserControl AsTransparent(this UserControl control)
+        {
+            control.BackColor = Color.Transparent;
+            return control;
+        }
         // ===== Main Form Containers =====
 
         public static Panel AsLeftCentralContainer(this Panel panel)
