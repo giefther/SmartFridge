@@ -8,6 +8,69 @@ namespace SmartFridge.UI.WinForms.Styles
     /// </summary>
     public static class ControlExtensions
     {
+        // ===== Main Form Containers =====
+
+        public static Panel AsTopContainer(this Panel panel)
+        {
+            panel.Dock = DockStyle.Top;
+            panel.Height = 150; // Базовая высота, будет пересчитана в форме
+            panel.BackColor = CustomFormStyles.PrimaryColor;
+            panel.Padding = new Padding(0);
+            panel.Margin = new Padding(0);
+            return panel;
+        }
+
+        public static Panel AsCentralContainer(this Panel panel)
+        {
+            panel.Dock = DockStyle.Fill;
+            panel.BackColor = CustomFormStyles.LightColor;
+            panel.Padding = new Padding(20);
+            panel.Margin = new Padding(0);
+            return panel;
+        }
+
+        public static Panel AsBottomContainer(this Panel panel)
+        {
+            panel.Dock = DockStyle.Bottom;
+            panel.Height = 80; // Базовая высота, будет пересчитана в форме
+            panel.BackColor = CustomFormStyles.DarkColor;
+            panel.Padding = new Padding(10);
+            panel.Margin = new Padding(0);
+            return panel;
+        }
+
+        public static Label AsContainerLabel(this Label label)
+        {
+            label.Dock = DockStyle.Fill;
+            label.TextAlign = ContentAlignment.MiddleCenter;
+            label.Font = CustomFormStyles.NormalFont;
+            return label;
+        }
+
+        public static Label AsTopContainerLabel(this Label label)
+        {
+            label.AsContainerLabel();
+            label.ForeColor = Color.White;
+            label.Font = CustomFormStyles.HeaderFont;
+            return label;
+        }
+
+        public static Label AsCentralContainerLabel(this Label label)
+        {
+            label.AsContainerLabel();
+            label.ForeColor = CustomFormStyles.DarkColor;
+            label.Font = CustomFormStyles.HeaderFont;
+            return label;
+        }
+
+        public static Label AsBottomContainerLabel(this Label label)
+        {
+            label.AsContainerLabel();
+            label.ForeColor = Color.White;
+            label.Font = CustomFormStyles.NormalFont;
+            return label;
+        }
+
         // ===== Button =====
 
         public static Button AsDark(this Button button)
