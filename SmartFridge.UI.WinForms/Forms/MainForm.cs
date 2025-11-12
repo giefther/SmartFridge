@@ -12,9 +12,12 @@ namespace SmartFridge.UI.WinForms.Forms
     public partial class MainForm : Form
     {
         private readonly SmartFridge.Core.Models.User _currentUser;
-        private readonly IProductService _productService;
         private System.Windows.Forms.Timer timeTimer;
 
+        // Сервисы
+        private readonly IProductService _productService;
+        private readonly ITemperatureService _temperatureService;
+        
         // Контроллы
         private ProductsGridControl productsGridControl;
         private HeaderControl headerControl;
@@ -46,10 +49,10 @@ namespace SmartFridge.UI.WinForms.Forms
         {
             _currentUser = user ?? throw new ArgumentNullException(nameof(user));
             _productService = CompositionRoot.GetProductService(user);
-            var temperatureService = CompositionRoot.GetTemperatureService(user); 
+            _temperatureService = CompositionRoot.GetTemperatureService(user); // ← Сохраняем в поле
 
             InitializeComponent();
-            SetupContainers(temperatureService); 
+            SetupContainers(_temperatureService);
             ApplyStyles();
             LoadProducts();
         }
@@ -87,7 +90,7 @@ namespace SmartFridge.UI.WinForms.Forms
         }
         private void CreateNotificationsControl()
         {
-            notificationsControl = new NotificationsControl
+            notificationsControl = new NotificationsControl(_productService, _temperatureService)
             {
                 Dock = DockStyle.Fill
             };

@@ -1,4 +1,6 @@
 ﻿using SmartFridge.UI.WinForms.Styles;
+using SmartFridge.Core.Interfaces;
+using SmartFridge.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
@@ -7,15 +9,19 @@ namespace SmartFridge.UI.WinForms.Controls
 {
     public partial class NotificationsControl : UserControl
     {
-        public event EventHandler NotificationClicked;
-
-        private Panel notificationsContainer;
+        private readonly IProductService _productService;
+        private readonly ITemperatureService _temperatureService;
+        private FlowLayoutPanel notificationsPanel;
+        private Label emptyLabel;
         private Label notificationsTitle;
-        private Label notificationsPlaceholder;
 
-        public NotificationsControl()
+        public NotificationsControl(IProductService productService, ITemperatureService temperatureService)
         {
+            _productService = productService;
+            _temperatureService = temperatureService;
+
             InitializeComponent();
+            // LoadNotifications() пока закомментируем - реализуем на этапе 2
         }
 
         private void InitializeComponent()
@@ -23,7 +29,7 @@ namespace SmartFridge.UI.WinForms.Controls
             this.SuspendLayout();
 
             // Основной контейнер
-            notificationsContainer = new Panel().AsCard();
+            var notificationsContainer = new Panel().AsCard();
             notificationsContainer.Dock = DockStyle.Fill;
 
             // Заголовок
@@ -36,22 +42,37 @@ namespace SmartFridge.UI.WinForms.Controls
             };
             notificationsTitle.AsHeader();
 
+            // Панель для уведомлений
+            notificationsPanel = new FlowLayoutPanel
+            {
+                Dock = DockStyle.Fill,
+                AutoScroll = true,
+                FlowDirection = FlowDirection.TopDown,
+                WrapContents = false
+            };
+
             // Заглушка
-            notificationsPlaceholder = new Label
+            emptyLabel = new Label
             {
                 Text = "Здесь будут уведомления",
                 Dock = DockStyle.Fill,
                 TextAlign = ContentAlignment.MiddleCenter
             };
-            notificationsPlaceholder.AsNormal();
-            notificationsPlaceholder.ForeColor = CustomFormStyles.SecondaryColor;
+            emptyLabel.AsNormal();
+            emptyLabel.ForeColor = CustomFormStyles.SecondaryColor;
 
             notificationsContainer.Controls.AddRange(new Control[] {
-                notificationsPlaceholder, notificationsTitle
+                notificationsPanel, notificationsTitle
             });
 
             this.Controls.Add(notificationsContainer);
             this.ResumeLayout(false);
+        }
+
+        // Временный заглушка - реализуем на этапе 2
+        private void LoadNotifications()
+        {
+            // TODO: Реализовать генерацию уведомлений
         }
 
         public void UpdateNotifications(List<string> notifications)
