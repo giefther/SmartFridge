@@ -2,7 +2,7 @@
 {
     public class FridgeSettings
     {
-        private double _temperature = 4.0;
+        private double _temperature = 5.0;
         public double Temperature 
         {
             get => _temperature;

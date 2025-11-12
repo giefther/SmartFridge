@@ -1,7 +1,8 @@
-﻿using System;
-using System.Windows.Forms;
+﻿using SmartFridge.Core.Interfaces;
 using SmartFridge.Core.Models;
 using SmartFridge.UI.WinForms.Styles;
+using System;
+using System.Windows.Forms;
 
 namespace SmartFridge.UI.WinForms.Controls
 {
@@ -13,13 +14,31 @@ namespace SmartFridge.UI.WinForms.Controls
         private Label lblTemperature;
         private Label lblUsername;
         private Button btnLogout;
-        private System.Windows.Forms.Timer timeTimer; // Явное указание
+        private System.Windows.Forms.Timer timeTimer;
+        private readonly ITemperatureService _temperatureService;
 
-        public HeaderControl(User user)
+        public HeaderControl(User user, ITemperatureService temperatureService)
         {
+            _temperatureService = temperatureService;
             InitializeComponent(user);
             InitializeTimer();
             ApplyStyles();
+            InitializeTemperature();
+        }
+
+        private void InitializeTemperature()
+        {
+            var currentTemp = _temperatureService.GetCurrentTemperature();
+            UpdateTemperatureDisplay(currentTemp);
+
+            _temperatureService.TemperatureChanged += (s, temp) => UpdateTemperatureDisplay(temp);
+        }
+        private void UpdateTemperatureDisplay(double temperature)
+        {
+            if (lblTemperature != null && !lblTemperature.IsDisposed)
+            {
+                lblTemperature.Text = $"❄️ {temperature}°C";
+            }
         }
 
         private void InitializeComponent(User user)

@@ -46,30 +46,30 @@ namespace SmartFridge.UI.WinForms.Forms
         {
             _currentUser = user ?? throw new ArgumentNullException(nameof(user));
             _productService = CompositionRoot.GetProductService(user);
+            var temperatureService = CompositionRoot.GetTemperatureService(user); 
 
             InitializeComponent();
-            SetupContainers();
+            SetupContainers(temperatureService); 
             ApplyStyles();
             LoadProducts();
         }
 
-        private void SetupContainers()
+        private void SetupContainers(ITemperatureService temperatureService)
         {
-            CreateCentralContainer();     
-            CreateCentralContainers();    
-            CreateTopContainer();         
-            CreateBottomContainer();      
+            CreateCentralContainer();
+            CreateCentralContainers();
+            CreateTopContainer(temperatureService); 
+            CreateBottomContainer();
         }
 
-        private void CreateTopContainer()
+        private void CreateTopContainer(ITemperatureService temperatureService)
         {
             topContainer = new Panel().AsTopContainer();
             topContainer.Height = CalculatePercentageValue(this.ClientSize.Height, _topToFormHeightPercentage);
             this.Controls.Add(topContainer);
 
-            // Header и Toolbar внутри TopContainer
-            CreateHeaderControl();
-            CreateToolbarControl();  
+            CreateHeaderControl(temperatureService); 
+            CreateToolbarControl();
         }
         private void CreateToolbarControl()
         {
@@ -102,9 +102,9 @@ namespace SmartFridge.UI.WinForms.Forms
                 Height = CalculatePercentageValue(leftCentralContainer.Height, _statToLeftHeightPercentage)
             };
         }
-        private void CreateHeaderControl()
+        private void CreateHeaderControl(ITemperatureService temperatureService)
         {
-            headerControl = new HeaderControl(_currentUser)
+            headerControl = new HeaderControl(_currentUser, temperatureService) // ← ПЕРЕДАТЬ СЕРВИС
             {
                 Height = CalculatePercentageValue(topContainer.Height, _headerToTopHeightPercentage),
                 Dock = DockStyle.Top
