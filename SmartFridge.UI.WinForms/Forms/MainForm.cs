@@ -68,22 +68,20 @@ namespace SmartFridge.UI.WinForms.Forms
             topContainer.Height = CalculatePercentageValue(this.ClientSize.Height, _topToFormHeightPercentage);
             this.Controls.Add(topContainer);
 
-            CreateHeaderControl(temperatureService); 
-            CreateToolbarControl();
+            CreateHeaderControl(temperatureService);
+            CreateToolbarControl(temperatureService); // ← ПЕРЕДАТЬ СЕРВИС
         }
-        private void CreateToolbarControl()
+        private void CreateToolbarControl(ITemperatureService temperatureService)
         {
-            toolbarControl = new ToolbarControl()
+            toolbarControl = new ToolbarControl(temperatureService) // ← ПЕРЕДАТЬ СЕРВИС
             {
                 Height = CalculatePercentageValue(topContainer.Height, _toolbarToTopHeightPercentage),
                 Dock = DockStyle.Bottom
             };
 
-            // Подписываемся на события
+            // Подписываемся на события управления продуктами
             toolbarControl.AddProductClicked += (s, e) => AddProduct();
             toolbarControl.DeleteProductClicked += (s, e) => DeleteProduct();
-            toolbarControl.IncreaseTempClicked += (s, e) => IncreaseTemperature();
-            toolbarControl.DecreaseTempClicked += (s, e) => DecreaseTemperature();
 
             topContainer.Controls.Add(toolbarControl);
         }

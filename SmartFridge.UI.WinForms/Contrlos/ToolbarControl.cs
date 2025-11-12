@@ -1,4 +1,5 @@
-﻿using SmartFridge.UI.WinForms.Styles;
+﻿using SmartFridge.Core.Interfaces;
+using SmartFridge.UI.WinForms.Styles;
 using System;
 using System.ComponentModel;
 using System.Windows.Forms;
@@ -11,6 +12,7 @@ namespace SmartFridge.UI.WinForms.Controls
         public event EventHandler DeleteProductClicked;
         public event EventHandler IncreaseTempClicked;
         public event EventHandler DecreaseTempClicked;
+        private readonly ITemperatureService _temperatureService;
 
         public bool DeleteButtonEnabled
         {
@@ -23,8 +25,9 @@ namespace SmartFridge.UI.WinForms.Controls
         private Button btnIncreaseTemp;
         private Button btnDecreaseTemp;
 
-        public ToolbarControl()
+        public ToolbarControl(ITemperatureService temperatureService)
         {
+            _temperatureService = temperatureService;
             InitializeComponent();
             ApplyStyles();
         }
@@ -54,7 +57,7 @@ namespace SmartFridge.UI.WinForms.Controls
                 Size = new Size(165, 45),
                 Location = new Point(0, 0)
             }.AsLight();
-            btnDecreaseTemp.Click += (s, e) => DecreaseTempClicked?.Invoke(this, e);
+            btnDecreaseTemp.Click += (s, e) => DecreaseTemperature(); // ← ИЗМЕНИТЬ
 
             // Кнопка увеличения температуры
             btnIncreaseTemp = new Button
@@ -63,7 +66,7 @@ namespace SmartFridge.UI.WinForms.Controls
                 Size = new Size(165, 45),
                 Location = new Point(175, 0)
             }.AsLight();
-            btnIncreaseTemp.Click += (s, e) => IncreaseTempClicked?.Invoke(this, e);
+            btnIncreaseTemp.Click += (s, e) => IncreaseTemperature(); // ← ИЗМЕНИТЬ
 
             leftPanel.Controls.AddRange(new Control[] { btnDecreaseTemp, btnIncreaseTemp });
 
@@ -91,16 +94,45 @@ namespace SmartFridge.UI.WinForms.Controls
                 Text = "➖ Удалить",
                 Size = new Size(110, 45),
                 Location = new Point(120, 0),
-                Enabled = false // Изначально неактивна
+                Enabled = false
             }.AsDanger();
             btnDeleteProduct.Click += (s, e) => DeleteProductClicked?.Invoke(this, e);
 
             rightPanel.Controls.AddRange(new Control[] { btnAddProduct, btnDeleteProduct });
 
-            // Добавляем панели в основной контрол
             this.Controls.AddRange(new Control[] { leftPanel, rightPanel });
-
             this.ResumeLayout(false);
+        }
+        private void IncreaseTemperature()
+        {
+            if (_temperatureService.GetCurrentTemperature() <= 9.5)
+            {
+                try
+                {
+                    _temperatureService.IncreaseTemperature();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Ошибка при увеличении температуры: {ex.Message}",
+                        "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        private void DecreaseTemperature()
+        {
+            if (_temperatureService.GetCurrentTemperature() >= -9.5)
+            {
+                try
+                {
+                    _temperatureService.DecreaseTemperature();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Ошибка при уменьшении температуры: {ex.Message}",
+                        "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
         }
 
         private void ApplyStyles()
