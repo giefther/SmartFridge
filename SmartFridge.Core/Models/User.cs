@@ -8,5 +8,6 @@
         public string Email { get; set; } = string.Empty;
         public DateTime RegisteredAt { get; set; } = DateTime.Now;
         public string ProductsFilePath => Path.Combine("products", $"{Id}-products.json");
+        public FridgeSettings FridgeSettings { get; set; } = new FridgeSettings() { Temperature = 3.5};
     }
 }
