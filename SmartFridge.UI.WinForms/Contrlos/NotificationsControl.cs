@@ -21,7 +21,9 @@ namespace SmartFridge.UI.WinForms.Controls
             _temperatureService = temperatureService;
 
             InitializeComponent();
-            // LoadNotifications() пока закомментируем - реализуем на этапе 2
+            LoadNotifications();
+
+            _temperatureService.TemperatureChanged += (s, temp) => RefreshNotifications();
         }
 
         private void InitializeComponent()
@@ -51,7 +53,6 @@ namespace SmartFridge.UI.WinForms.Controls
                 WrapContents = false
             };
 
-            // Заглушка
             emptyLabel = new Label
             {
                 Text = "Здесь будут уведомления",
@@ -69,12 +70,146 @@ namespace SmartFridge.UI.WinForms.Controls
             this.ResumeLayout(false);
         }
 
-        // Временный заглушка - реализуем на этапе 2
-        private void LoadNotifications()
+        private List<Notification> GenerateNotifications()
         {
-            // TODO: Реализовать генерацию уведомлений
+            var notifications = new List<Notification>();
+
+            // Проверяем продукты
+            var products = _productService.GetAllProducts();
+            CheckProductNotifications(products, notifications);
+
+            // Проверяем температуру
+            var currentTemp = _temperatureService.GetCurrentTemperature();
+            CheckTemperatureNotifications(currentTemp, notifications);
+
+            return notifications;
+        }
+        private void CheckProductNotifications(IEnumerable<Product> products, List<Notification> notifications)
+        {
+            var expiredCount = _productService.GetExpiredProducts().Count();
+            var soonCount = _productService.GetExpiringSoonProducts(3).Count();
+
+            // Уведомление о просроченных продуктах
+            if (expiredCount > 0)
+            {
+                notifications.Add(new Notification
+                {
+                    Message = $"У вас есть просроченные продукты ({expiredCount} шт.)",
+                    Type = NotificationType.Danger
+                });
+            }
+
+            // Уведомление о скоро истекающих продуктах
+            if (soonCount > 0)
+            {
+                notifications.Add(new Notification
+                {
+                    Message = $"Некоторые продукты скоро испортятся ({soonCount} шт.)",
+                    Type = NotificationType.Warning
+                });
+            }
+        }
+        private void CheckTemperatureNotifications(double currentTemp, List<Notification> notifications)
+        {
+            // Низкая температура
+            if (currentTemp < 2)
+            {
+                notifications.Add(new Notification
+                {
+                    Message = $"Температура низкая: {currentTemp}°C (рекомендуется +2°C...+6°C)",
+                    Type = NotificationType.Info
+                });
+            }
+
+            // Высокая температура
+            if (currentTemp > 6)
+            {
+                notifications.Add(new Notification
+                {
+                    Message = $"Температура высокая: {currentTemp}°C (рекомендуется +2°C...+6°C)",
+                    Type = NotificationType.Info
+                });
+            }
+        }
+        public void RefreshNotifications()
+        {
+            var notifications = GenerateNotifications();
+            DisplayNotifications(notifications);
         }
 
+        private void LoadNotifications() => RefreshNotifications();
+
+        private void DisplayNotifications(List<Notification> notifications)
+        {
+            notificationsPanel.Controls.Clear();
+
+            if (notifications.Count == 0)
+            {
+                notificationsPanel.Controls.Add(emptyLabel);
+                return;
+            }
+
+            foreach (var notification in notifications)
+            {
+                var notificationItem = CreateNotificationItem(notification);
+                notificationsPanel.Controls.Add(notificationItem);
+            }
+        }
+        private Panel CreateNotificationItem(Notification notification)
+        {
+            var panel = new Panel
+            {
+                Width = notificationsPanel.ClientSize.Width - 25,
+                BackColor = GetNotificationColor(notification.Type),
+            }.AsNotificationsPanel();
+
+            // Иконка уведомления
+            var iconLabel = new Label
+            {
+                Text = GetNotificationIcon(notification.Type),
+                Location = new Point(5, 15),
+                Size = new Size(30, 30),
+                Font = new Font("Segoe UI", 12),
+                TextAlign = ContentAlignment.MiddleCenter,
+                //Anchor = AnchorStyles.Left | AnchorStyles.Top
+            };
+
+            // Текст уведомления
+            var textLabel = new Label
+            {
+                Text = notification.Message,
+                Location = new Point(40, 15),
+                Size = new Size(panel.Width - 50, 30),
+                Font = CustomFormStyles.NormalFont,
+                TextAlign = ContentAlignment.MiddleLeft,
+                //Anchor = AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top
+            };
+
+            panel.Controls.AddRange(new Control[] { iconLabel, textLabel });
+
+            return panel;
+        }
+        private Color GetNotificationColor(NotificationType type)
+        {
+            return type switch
+            {
+                NotificationType.Danger => Color.FromArgb(255, 200, 200),   // Светло-красный
+                NotificationType.Warning => Color.FromArgb(255, 235, 200),  // Светло-оранжевый
+                NotificationType.Info => Color.FromArgb(200, 230, 255),     // Светло-синий
+                _ => Color.FromArgb(225, 225, 225)                         // Светло-серый
+            };
+        }
+
+        private string GetNotificationIcon(NotificationType type)
+        {
+            return type switch
+            {
+                NotificationType.Danger => "🚨",
+                NotificationType.Warning => "⚠️",
+                NotificationType.Info => "ℹ️",
+                _ => "💡"
+            };
+        }
         public void UpdateNotifications(List<string> notifications)
         {
             // TODO: Реализовать когда будет сервис уведомлений

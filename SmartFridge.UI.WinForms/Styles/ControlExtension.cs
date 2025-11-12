@@ -1,4 +1,6 @@
-﻿using System.Drawing;
+﻿using SmartFridge.Core.Models;
+using System.Drawing;
+using System.Drawing.Printing;
 using System.Windows.Forms;
 
 namespace SmartFridge.UI.WinForms.Styles
@@ -283,6 +285,15 @@ namespace SmartFridge.UI.WinForms.Styles
             panel.BackColor = Color.White;
             panel.BorderStyle = BorderStyle.FixedSingle;
             panel.Padding = new Padding(20);
+            return panel;
+        }
+
+        public static Panel AsNotificationsPanel(this Panel panel)
+        {
+            panel.Height = 60;
+            panel.Margin = new Padding(0, 2, 0, 2);
+            panel.Padding = new Padding(10);
+            //panel.Anchor = AnchorStyles.Left | AnchorStyles.Right;
             return panel;
         }
 

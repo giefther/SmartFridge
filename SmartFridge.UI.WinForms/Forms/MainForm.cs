@@ -120,12 +120,13 @@ namespace SmartFridge.UI.WinForms.Forms
             Application.Restart();
         }
 
-        // Обработчики событий (заглушки)
+        private void RefreshNotification() => notificationsControl?.RefreshNotifications();
         private void LoadProducts()
         {
             var products = _productService.GetAllProducts();
             productsGridControl.LoadProducts(products);
             UpdateStatistics();
+            RefreshNotification();
         }
         private void AddProduct()
         {
