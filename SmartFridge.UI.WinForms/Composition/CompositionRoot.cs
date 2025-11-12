@@ -41,6 +41,12 @@ namespace SmartFridge.UI.WinForms.Composition
             return productService;
         }
 
+        public static ITemperatureService GetTemperatureService(User user)
+        {
+            var userRepository = DataStorage.UserRepository;
+            return new TemperatureService(user, userRepository);
+        }
+
         /// <summary>
         /// Очищает кэш ProductService для конкретного пользователя
         /// </summary>
