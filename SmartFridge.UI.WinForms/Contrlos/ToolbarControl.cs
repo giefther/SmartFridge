@@ -25,6 +25,11 @@ namespace SmartFridge.UI.WinForms.Controls
         private Button btnIncreaseTemp;
         private Button btnDecreaseTemp;
 
+        public void SimulateAddProductClick() => btnAddProduct.PerformClick();
+        public void SimulateDeleteProductClick() => btnDeleteProduct.PerformClick();
+        public void SimulateIncreaseTempClick() => btnIncreaseTemp.PerformClick();
+        public void SimulateDecreaseTempClick() => btnDecreaseTemp.PerformClick();
+
         public ToolbarControl(ITemperatureService temperatureService)
         {
             _temperatureService = temperatureService;

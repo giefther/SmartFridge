@@ -62,7 +62,7 @@ namespace SmartFridge.UI.WinForms.Styles
         public static Panel AsTopContainer(this Panel panel)
         {
             panel.Dock = DockStyle.Top;
-            panel.Height = 150; // Базовая высота, будет пересчитана в форме
+            panel.Height = 150; 
             panel.BackColor = CustomFormStyles.PrimaryColor;
             panel.Padding = new Padding(0);
             panel.Margin = new Padding(0);
@@ -104,7 +104,7 @@ namespace SmartFridge.UI.WinForms.Styles
         public static Panel AsBottomContainer(this Panel panel)
         {
             panel.Dock = DockStyle.Bottom;
-            panel.Height = 80; // Базовая высота, будет пересчитана в форме
+            panel.Height = 80; 
             panel.BackColor = CustomFormStyles.DarkColor;
             panel.Padding = new Padding(10);
             panel.Margin = new Padding(0);
@@ -173,6 +173,18 @@ namespace SmartFridge.UI.WinForms.Styles
             button.FlatStyle = FlatStyle.Flat;
             button.FlatAppearance.BorderSize = 1;
             button.FlatAppearance.BorderColor = CustomFormStyles.PrimaryColor;
+            button.Font = CustomFormStyles.NormalFont;
+            button.Cursor = Cursors.Hand;
+            button.Padding = new Padding(10, 5, 10, 5);
+            return button;
+        }
+
+        public static Button AsUpdate(this Button button)
+        {
+            button.BackColor = CustomFormStyles.PrimaryColor; // Синий цвет
+            button.ForeColor = Color.White;
+            button.FlatStyle = FlatStyle.Flat;
+            button.FlatAppearance.BorderSize = 0;
             button.Font = CustomFormStyles.NormalFont;
             button.Cursor = Cursors.Hand;
             button.Padding = new Padding(10, 5, 10, 5);
@@ -293,7 +305,6 @@ namespace SmartFridge.UI.WinForms.Styles
             panel.Height = 60;
             panel.Margin = new Padding(0, 2, 0, 2);
             panel.Padding = new Padding(10);
-            //panel.Anchor = AnchorStyles.Left | AnchorStyles.Right;
             return panel;
         }
 

@@ -211,7 +211,7 @@ namespace SmartFridge.UI.WinForms.Controls
 
         public void LoadProducts(IEnumerable<Product> products)
         {
-            _allProducts = products?.ToList() ?? new List<Product>();
+            _allProducts = products?.OrderBy(p => p.ExpirationDate).ToList() ?? new List<Product>();
             _filteredProducts = new List<Product>(_allProducts);
             productsDataGrid.DataSource = _filteredProducts;
             UpdateStatusLabel();

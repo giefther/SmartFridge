@@ -10,8 +10,6 @@ namespace SmartFridge.UI.WinForms
         static void Main()
         {
             ApplicationConfiguration.Initialize();
-            
-            // ???????? ?????-????
             var loginForm = new LoginForm();
             Application.Run(loginForm);
         }

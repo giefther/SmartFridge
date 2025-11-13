@@ -11,8 +11,9 @@ namespace SmartFridge.Core.Models
 
     public enum NotificationType
     {
-        Info,
-        Warning,
-        Danger
+        TooCold,
+        TooHot,
+        SoonExpired,
+        Expired
     }
 }

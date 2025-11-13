@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualBasic.ApplicationServices;
 using SmartFridge.Core.Interfaces;
 using SmartFridge.Core.Models;
+using SmartFridge.Core.Services;
 using SmartFridge.UI.WinForms.Composition;
 using SmartFridge.UI.WinForms.Controls;
 using SmartFridge.UI.WinForms.Styles;
@@ -49,7 +50,7 @@ namespace SmartFridge.UI.WinForms.Forms
         {
             _currentUser = user ?? throw new ArgumentNullException(nameof(user));
             _productService = CompositionRoot.GetProductService(user);
-            _temperatureService = CompositionRoot.GetTemperatureService(user); // ← Сохраняем в поле
+            _temperatureService = CompositionRoot.GetTemperatureService(user); 
 
             InitializeComponent();
             SetupContainers(_temperatureService);
@@ -162,18 +163,6 @@ namespace SmartFridge.UI.WinForms.Forms
             }
         }
 
-        private void IncreaseTemperature()
-        {
-            // TODO: Увеличить температуру  
-            MessageBox.Show("Температура увеличена");
-        }
-
-        private void DecreaseTemperature()
-        {
-            // TODO: Уменьшить температуру
-            MessageBox.Show("Температура уменьшена");
-        }
-
         private void CreateCentralContainer()
         {
             centralContainer = new Panel().AsCentralContainer();
@@ -200,6 +189,7 @@ namespace SmartFridge.UI.WinForms.Forms
 
             CreateProductsGrid();
             CreateLeftContent();
+            CreateShortcutsControl();
         }
 
         private void CreateProductsGrid()
@@ -292,8 +282,46 @@ namespace SmartFridge.UI.WinForms.Forms
 
             if (rightCentralContainer != null)
                 rightCentralContainer.Width = CalculatePercentageValue(centralContainer.Width, _rightCentralWidthPercentage);
+
             if (statisticsControl != null && leftCentralContainer != null)
                 statisticsControl.Height = CalculatePercentageValue(leftCentralContainer.Height, _statToLeftHeightPercentage);
+
+            if (notificationsControl != null && rightCentralContainer != null)
+            {
+                notificationsControl.RedisplayNotifications();
+            }
+        }
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            // Обрабатываем комбинации клавиш
+            switch (keyData)
+            {
+                case Keys.Control | Keys.A: // Add product
+                    toolbarControl.SimulateAddProductClick();
+                    return true;
+
+                case Keys.Control | Keys.R: // Remove prooduct
+                    toolbarControl.SimulateDeleteProductClick();
+                    return true;
+
+                case Keys.Control | Keys.I: // Increase temperature
+                    toolbarControl.SimulateIncreaseTempClick();
+                    return true;
+
+                case Keys.Control | Keys.D: // Decrease temperature
+                    toolbarControl.SimulateDecreaseTempClick();
+                    return true;
+            }
+
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
+        private void CreateShortcutsControl()
+        {
+            var shortcutsControl = new ShortcutsControl
+            {
+                Dock = DockStyle.Fill
+            };
+            rightCentralContainer.Controls.Add(shortcutsControl);
         }
     }
 }

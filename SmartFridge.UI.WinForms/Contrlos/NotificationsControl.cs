@@ -14,6 +14,7 @@ namespace SmartFridge.UI.WinForms.Controls
         private FlowLayoutPanel notificationsPanel;
         private Label emptyLabel;
         private Label notificationsTitle;
+        private List<Notification> _currentNotificaitons;
 
         public NotificationsControl(IProductService productService, ITemperatureService temperatureService)
         {
@@ -95,7 +96,7 @@ namespace SmartFridge.UI.WinForms.Controls
                 notifications.Add(new Notification
                 {
                     Message = $"У вас есть просроченные продукты ({expiredCount} шт.)",
-                    Type = NotificationType.Danger
+                    Type = NotificationType.Expired
                 });
             }
 
@@ -105,7 +106,7 @@ namespace SmartFridge.UI.WinForms.Controls
                 notifications.Add(new Notification
                 {
                     Message = $"Некоторые продукты скоро испортятся ({soonCount} шт.)",
-                    Type = NotificationType.Warning
+                    Type = NotificationType.SoonExpired
                 });
             }
         }
@@ -117,7 +118,7 @@ namespace SmartFridge.UI.WinForms.Controls
                 notifications.Add(new Notification
                 {
                     Message = $"Температура низкая: {currentTemp}°C (рекомендуется +2°C...+6°C)",
-                    Type = NotificationType.Info
+                    Type = NotificationType.TooCold
                 });
             }
 
@@ -127,18 +128,21 @@ namespace SmartFridge.UI.WinForms.Controls
                 notifications.Add(new Notification
                 {
                     Message = $"Температура высокая: {currentTemp}°C (рекомендуется +2°C...+6°C)",
-                    Type = NotificationType.Info
+                    Type = NotificationType.TooHot
                 });
             }
         }
         public void RefreshNotifications()
         {
             var notifications = GenerateNotifications();
+            _currentNotificaitons = notifications;
             DisplayNotifications(notifications);
         }
-
+        public void RedisplayNotifications()
+        {
+            DisplayNotifications(_currentNotificaitons);
+        }
         private void LoadNotifications() => RefreshNotifications();
-
         private void DisplayNotifications(List<Notification> notifications)
         {
             notificationsPanel.Controls.Clear();
@@ -171,7 +175,6 @@ namespace SmartFridge.UI.WinForms.Controls
                 Size = new Size(30, 30),
                 Font = new Font("Segoe UI", 12),
                 TextAlign = ContentAlignment.MiddleCenter,
-                //Anchor = AnchorStyles.Left | AnchorStyles.Top
             };
 
             // Текст уведомления
@@ -182,7 +185,6 @@ namespace SmartFridge.UI.WinForms.Controls
                 Size = new Size(panel.Width - 50, 30),
                 Font = CustomFormStyles.NormalFont,
                 TextAlign = ContentAlignment.MiddleLeft,
-                //Anchor = AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top
             };
 
             panel.Controls.AddRange(new Control[] { iconLabel, textLabel });
@@ -193,9 +195,10 @@ namespace SmartFridge.UI.WinForms.Controls
         {
             return type switch
             {
-                NotificationType.Danger => Color.FromArgb(255, 200, 200),   // Светло-красный
-                NotificationType.Warning => Color.FromArgb(255, 235, 200),  // Светло-оранжевый
-                NotificationType.Info => Color.FromArgb(200, 230, 255),     // Светло-синий
+                NotificationType.Expired => Color.FromArgb(255, 200, 200),   // Светло-красный
+                NotificationType.SoonExpired => Color.FromArgb(255, 235, 200),  // Светло-оранжевый
+                NotificationType.TooCold => Color.FromArgb(200, 230, 255),     // Светло-синий
+                NotificationType.TooHot => Color.FromArgb(250, 145, 5),     // Светло-оранжевый
                 _ => Color.FromArgb(225, 225, 225)                         // Светло-серый
             };
         }
@@ -204,15 +207,12 @@ namespace SmartFridge.UI.WinForms.Controls
         {
             return type switch
             {
-                NotificationType.Danger => "🚨",
-                NotificationType.Warning => "⚠️",
-                NotificationType.Info => "ℹ️",
+                NotificationType.Expired => "🚨",
+                NotificationType.SoonExpired => "⚠️",
+                NotificationType.TooCold => "❄️",
+                NotificationType.TooHot => "🌡️",
                 _ => "💡"
             };
-        }
-        public void UpdateNotifications(List<string> notifications)
-        {
-            // TODO: Реализовать когда будет сервис уведомлений
         }
     }
 }
