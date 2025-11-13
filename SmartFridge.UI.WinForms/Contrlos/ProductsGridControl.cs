@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Windows.Forms;
-using SmartFridge.Core.Models;
+﻿using SmartFridge.Core.Models;
 using SmartFridge.UI.WinForms.Styles;
 
 namespace SmartFridge.UI.WinForms.Controls
@@ -33,7 +28,6 @@ namespace SmartFridge.UI.WinForms.Controls
         {
             this.SuspendLayout();
 
-            // Панель поиска
             var searchPanel = new Panel
             {
                 Dock = DockStyle.Top,
@@ -41,7 +35,6 @@ namespace SmartFridge.UI.WinForms.Controls
                 Padding = new Padding(0, 5, 0, 5)
             };
 
-            // Поле поиска
             searchTextBox = new TextBox
             {
                 PlaceholderText = "🔍 Поиск продуктов...",
@@ -49,8 +42,7 @@ namespace SmartFridge.UI.WinForms.Controls
                 Width = 200
             }.AsTextField();
             searchTextBox.TextChanged += SearchTextBox_TextChanged;
-            
-            // Кнопка очистки поиска
+
             var btnClearSearch = new Button
             {
                 Text = "❌",
@@ -68,8 +60,6 @@ namespace SmartFridge.UI.WinForms.Controls
                 Width = 150
             }.AsNormal();
 
-
-            // Добавляем элементы в searchPanel
             searchPanel.Controls.AddRange(new Control[] { searchTextBox, btnClearSearch, statusLabel });
 
 
@@ -211,7 +201,7 @@ namespace SmartFridge.UI.WinForms.Controls
 
         public void LoadProducts(IEnumerable<Product> products)
         {
-            _allProducts = products?.ToList() ?? new List<Product>();
+            _allProducts = products?.OrderBy(p => p.ExpirationDate).ToList() ?? new List<Product>();
             _filteredProducts = new List<Product>(_allProducts);
             productsDataGrid.DataSource = _filteredProducts;
             UpdateStatusLabel();

@@ -1,19 +1,18 @@
-﻿using Microsoft.VisualBasic.ApplicationServices;
-using SmartFridge.Core.Interfaces;
-using SmartFridge.Core.Models;
+﻿using SmartFridge.Core.Interfaces;
 using SmartFridge.UI.WinForms.Composition;
 using SmartFridge.UI.WinForms.Controls;
 using SmartFridge.UI.WinForms.Styles;
-using System;
-using System.Windows.Forms;
 
 namespace SmartFridge.UI.WinForms.Forms
 {
     public partial class MainForm : Form
     {
         private readonly SmartFridge.Core.Models.User _currentUser;
-        private readonly IProductService _productService;
         private System.Windows.Forms.Timer timeTimer;
+
+        // Сервисы
+        private readonly IProductService _productService;
+        private readonly ITemperatureService _temperatureService;
 
         // Контроллы
         private ProductsGridControl productsGridControl;
@@ -46,50 +45,48 @@ namespace SmartFridge.UI.WinForms.Forms
         {
             _currentUser = user ?? throw new ArgumentNullException(nameof(user));
             _productService = CompositionRoot.GetProductService(user);
+            _temperatureService = CompositionRoot.GetTemperatureService(user);
 
             InitializeComponent();
-            SetupContainers();
+            SetupContainers(_temperatureService);
             ApplyStyles();
             LoadProducts();
         }
 
-        private void SetupContainers()
+        private void SetupContainers(ITemperatureService temperatureService)
         {
-            CreateCentralContainer();     
-            CreateCentralContainers();    
-            CreateTopContainer();         
-            CreateBottomContainer();      
+            CreateCentralContainer();
+            CreateCentralContainers();
+            CreateTopContainer(temperatureService);
+            CreateBottomContainer();
         }
 
-        private void CreateTopContainer()
+        private void CreateTopContainer(ITemperatureService temperatureService)
         {
             topContainer = new Panel().AsTopContainer();
             topContainer.Height = CalculatePercentageValue(this.ClientSize.Height, _topToFormHeightPercentage);
             this.Controls.Add(topContainer);
 
-            // Header и Toolbar внутри TopContainer
-            CreateHeaderControl();
-            CreateToolbarControl();  
+            CreateHeaderControl(temperatureService);
+            CreateToolbarControl(temperatureService);
         }
-        private void CreateToolbarControl()
+        private void CreateToolbarControl(ITemperatureService temperatureService)
         {
-            toolbarControl = new ToolbarControl()
+            toolbarControl = new ToolbarControl(temperatureService) 
             {
                 Height = CalculatePercentageValue(topContainer.Height, _toolbarToTopHeightPercentage),
                 Dock = DockStyle.Bottom
             };
 
-            // Подписываемся на события
+            // Подписываемся на события управления продуктами
             toolbarControl.AddProductClicked += (s, e) => AddProduct();
             toolbarControl.DeleteProductClicked += (s, e) => DeleteProduct();
-            toolbarControl.IncreaseTempClicked += (s, e) => IncreaseTemperature();
-            toolbarControl.DecreaseTempClicked += (s, e) => DecreaseTemperature();
 
             topContainer.Controls.Add(toolbarControl);
         }
         private void CreateNotificationsControl()
         {
-            notificationsControl = new NotificationsControl
+            notificationsControl = new NotificationsControl(_productService, _temperatureService)
             {
                 Dock = DockStyle.Fill
             };
@@ -102,9 +99,9 @@ namespace SmartFridge.UI.WinForms.Forms
                 Height = CalculatePercentageValue(leftCentralContainer.Height, _statToLeftHeightPercentage)
             };
         }
-        private void CreateHeaderControl()
+        private void CreateHeaderControl(ITemperatureService temperatureService)
         {
-            headerControl = new HeaderControl(_currentUser)
+            headerControl = new HeaderControl(_currentUser, temperatureService) 
             {
                 Height = CalculatePercentageValue(topContainer.Height, _headerToTopHeightPercentage),
                 Dock = DockStyle.Top
@@ -119,12 +116,13 @@ namespace SmartFridge.UI.WinForms.Forms
             Application.Restart();
         }
 
-        // Обработчики событий (заглушки)
+        private void RefreshNotification() => notificationsControl?.RefreshNotifications();
         private void LoadProducts()
         {
             var products = _productService.GetAllProducts();
             productsGridControl.LoadProducts(products);
             UpdateStatistics();
+            RefreshNotification();
         }
         private void AddProduct()
         {
@@ -160,18 +158,6 @@ namespace SmartFridge.UI.WinForms.Forms
             }
         }
 
-        private void IncreaseTemperature()
-        {
-            // TODO: Увеличить температуру  
-            MessageBox.Show("Температура увеличена");
-        }
-
-        private void DecreaseTemperature()
-        {
-            // TODO: Уменьшить температуру
-            MessageBox.Show("Температура уменьшена");
-        }
-
         private void CreateCentralContainer()
         {
             centralContainer = new Panel().AsCentralContainer();
@@ -198,6 +184,7 @@ namespace SmartFridge.UI.WinForms.Forms
 
             CreateProductsGrid();
             CreateLeftContent();
+            CreateShortcutsControl();
         }
 
         private void CreateProductsGrid()
@@ -215,11 +202,11 @@ namespace SmartFridge.UI.WinForms.Forms
 
         private void CreateLeftContent()
         {
-            // NotificationsControl - нижняя половина (50%) - ДОБАВЛЯЕМ ПЕРВЫМ
+            // NotificationsControl - нижняя половина (50%)
             CreateNotificationsControl();
             leftCentralContainer.Controls.Add(notificationsControl);
 
-            // StatisticsControl - верхняя половина (50%) - ДОБАВЛЯЕМ ВТОРЫМ
+            // StatisticsControl - верхняя половина (50%)
             CreateStatisticsControl();
             leftCentralContainer.Controls.Add(statisticsControl);
         }
@@ -252,7 +239,6 @@ namespace SmartFridge.UI.WinForms.Forms
 
         private void ApplyStyles()
         {
-            // Стиль формы
             this.AsMainForm();
             this.Text = $"Умный холодильник - {_currentUser.Username}";
         }
@@ -271,8 +257,6 @@ namespace SmartFridge.UI.WinForms.Forms
         protected override void OnResize(EventArgs e)
         {
             base.OnResize(e);
-
-            // Обновляем высоты при изменении размера формы
             if (topContainer != null)
                 topContainer.Height = CalculatePercentageValue(this.ClientSize.Height, _topToFormHeightPercentage);
 
@@ -290,8 +274,45 @@ namespace SmartFridge.UI.WinForms.Forms
 
             if (rightCentralContainer != null)
                 rightCentralContainer.Width = CalculatePercentageValue(centralContainer.Width, _rightCentralWidthPercentage);
+
             if (statisticsControl != null && leftCentralContainer != null)
                 statisticsControl.Height = CalculatePercentageValue(leftCentralContainer.Height, _statToLeftHeightPercentage);
+
+            if (notificationsControl != null && rightCentralContainer != null)
+            {
+                notificationsControl.RedisplayNotifications();
+            }
+        }
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            switch (keyData)
+            {
+                case Keys.Control | Keys.A: // Add product
+                    toolbarControl.SimulateAddProductClick();
+                    return true;
+
+                case Keys.Control | Keys.R: // Remove prooduct
+                    toolbarControl.SimulateDeleteProductClick();
+                    return true;
+
+                case Keys.Control | Keys.I: // Increase temperature
+                    toolbarControl.SimulateIncreaseTempClick();
+                    return true;
+
+                case Keys.Control | Keys.D: // Decrease temperature
+                    toolbarControl.SimulateDecreaseTempClick();
+                    return true;
+            }
+
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
+        private void CreateShortcutsControl()
+        {
+            var shortcutsControl = new ShortcutsControl
+            {
+                Dock = DockStyle.Fill
+            };
+            rightCentralContainer.Controls.Add(shortcutsControl);
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Windows.Forms;
+﻿using SmartFridge.Core.Interfaces;
 using SmartFridge.Core.Models;
 using SmartFridge.UI.WinForms.Styles;
 
@@ -13,13 +12,30 @@ namespace SmartFridge.UI.WinForms.Controls
         private Label lblTemperature;
         private Label lblUsername;
         private Button btnLogout;
-        private System.Windows.Forms.Timer timeTimer; // Явное указание
+        private System.Windows.Forms.Timer timeTimer;
+        private readonly ITemperatureService _temperatureService;
 
-        public HeaderControl(User user)
+        public HeaderControl(User user, ITemperatureService temperatureService)
         {
+            _temperatureService = temperatureService;
             InitializeComponent(user);
             InitializeTimer();
-            ApplyStyles();
+            InitializeTemperature();
+        }
+
+        private void InitializeTemperature()
+        {
+            var currentTemp = _temperatureService.GetCurrentTemperature();
+            UpdateTemperatureDisplay(currentTemp);
+
+            _temperatureService.TemperatureChanged += (s, temp) => UpdateTemperatureDisplay(temp);
+        }
+        private void UpdateTemperatureDisplay(double temperature)
+        {
+            if (lblTemperature != null && !lblTemperature.IsDisposed)
+            {
+                lblTemperature.Text = $"❄️ {temperature}°C";
+            }
         }
 
         private void InitializeComponent(User user)
@@ -29,9 +45,8 @@ namespace SmartFridge.UI.WinForms.Controls
             // Основной контейнер header'а - используем стили для UserControl
             this.BackColor = CustomFormStyles.DarkColor;
             this.Padding = new Padding(20, 5, 20, 10);
-            this.Height = 60; // Фиксированная высота
+            this.Height = 60; 
 
-            // Левая часть - время и температура
             var leftPanel = new Panel
             {
                 Dock = DockStyle.Left,
@@ -58,7 +73,6 @@ namespace SmartFridge.UI.WinForms.Controls
 
             leftPanel.Controls.AddRange(new Control[] { lblTime, lblTemperature });
 
-            // Правая часть - пользователь и кнопка выхода
             var rightPanel = new Panel
             {
                 Dock = DockStyle.Right,
@@ -67,7 +81,6 @@ namespace SmartFridge.UI.WinForms.Controls
                 BackColor = Color.Transparent
             };
 
-            // Имя пользователя
             lblUsername = new Label
             {
                 Text = $"👤 {user.Username}",
@@ -75,7 +88,6 @@ namespace SmartFridge.UI.WinForms.Controls
                 Location = new Point(35, 8)
             }.AsHeader().WithWhiteText();
 
-            // Кнопка выхода
             btnLogout = new Button
             {
                 Text = "Выйти",
@@ -86,23 +98,17 @@ namespace SmartFridge.UI.WinForms.Controls
 
             rightPanel.Controls.AddRange(new Control[] { lblUsername, btnLogout });
 
-            // Добавляем панели в основной контрол
             this.Controls.AddRange(new Control[] { leftPanel, rightPanel });
 
             this.ResumeLayout(false);
         }
 
-        private void ApplyStyles()
-        {
-            // Дополнительные стили если нужно
-        }
-
         private void InitializeTimer()
         {
-            timeTimer = new System.Windows.Forms.Timer { Interval = 1000 }; // Явное указание
+            timeTimer = new System.Windows.Forms.Timer { Interval = 1000 }; 
             timeTimer.Tick += (s, e) => UpdateTime();
             timeTimer.Start();
-            UpdateTime(); // Первоначальное обновление
+            UpdateTime(); 
         }
 
         private void UpdateTime()

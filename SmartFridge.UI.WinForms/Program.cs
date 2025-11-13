@@ -1,6 +1,4 @@
 using SmartFridge.UI.WinForms.Forms;
-using System;
-using System.Windows.Forms;
 
 namespace SmartFridge.UI.WinForms
 {
@@ -10,8 +8,6 @@ namespace SmartFridge.UI.WinForms
         static void Main()
         {
             ApplicationConfiguration.Initialize();
-            
-            // ???????? ?????-????
             var loginForm = new LoginForm();
             Application.Run(loginForm);
         }

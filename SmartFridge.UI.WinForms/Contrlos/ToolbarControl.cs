@@ -1,7 +1,5 @@
-﻿using SmartFridge.UI.WinForms.Styles;
-using System;
-using System.ComponentModel;
-using System.Windows.Forms;
+﻿using SmartFridge.Core.Interfaces;
+using SmartFridge.UI.WinForms.Styles;
 
 namespace SmartFridge.UI.WinForms.Controls
 {
@@ -11,6 +9,7 @@ namespace SmartFridge.UI.WinForms.Controls
         public event EventHandler DeleteProductClicked;
         public event EventHandler IncreaseTempClicked;
         public event EventHandler DecreaseTempClicked;
+        private readonly ITemperatureService _temperatureService;
 
         public bool DeleteButtonEnabled
         {
@@ -23,20 +22,24 @@ namespace SmartFridge.UI.WinForms.Controls
         private Button btnIncreaseTemp;
         private Button btnDecreaseTemp;
 
-        public ToolbarControl()
+        public void SimulateAddProductClick() => btnAddProduct.PerformClick();
+        public void SimulateDeleteProductClick() => btnDeleteProduct.PerformClick();
+        public void SimulateIncreaseTempClick() => btnIncreaseTemp.PerformClick();
+        public void SimulateDecreaseTempClick() => btnDecreaseTemp.PerformClick();
+
+        public ToolbarControl(ITemperatureService temperatureService)
         {
+            _temperatureService = temperatureService;
             InitializeComponent();
-            ApplyStyles();
         }
 
         private void InitializeComponent()
         {
             this.SuspendLayout();
 
-            // Основной контейнер toolbar'а
             this.BackColor = CustomFormStyles.SecondaryColor;
             this.Padding = new Padding(15, 8, 15, 8);
-            this.Height = 60; // Фиксированная высота
+            this.Height = 60;
 
             // Левая часть - управление температурой
             var leftPanel = new Panel
@@ -47,23 +50,21 @@ namespace SmartFridge.UI.WinForms.Controls
                 BackColor = Color.Transparent
             };
 
-            // Кнопка уменьшения температуры
             btnDecreaseTemp = new Button
             {
                 Text = "❄️ Уменьшить",
                 Size = new Size(165, 45),
                 Location = new Point(0, 0)
             }.AsLight();
-            btnDecreaseTemp.Click += (s, e) => DecreaseTempClicked?.Invoke(this, e);
+            btnDecreaseTemp.Click += (s, e) => DecreaseTemperature();
 
-            // Кнопка увеличения температуры
             btnIncreaseTemp = new Button
             {
                 Text = "☀️ Увеличить",
                 Size = new Size(165, 45),
                 Location = new Point(175, 0)
             }.AsLight();
-            btnIncreaseTemp.Click += (s, e) => IncreaseTempClicked?.Invoke(this, e);
+            btnIncreaseTemp.Click += (s, e) => IncreaseTemperature(); 
 
             leftPanel.Controls.AddRange(new Control[] { btnDecreaseTemp, btnIncreaseTemp });
 
@@ -76,7 +77,6 @@ namespace SmartFridge.UI.WinForms.Controls
                 BackColor = Color.Transparent
             };
 
-            // Кнопка добавления продукта
             btnAddProduct = new Button
             {
                 Text = "➕ Добавить",
@@ -85,27 +85,50 @@ namespace SmartFridge.UI.WinForms.Controls
             }.AsSuccess();
             btnAddProduct.Click += (s, e) => AddProductClicked?.Invoke(this, e);
 
-            // Кнопка удаления продукта
             btnDeleteProduct = new Button
             {
                 Text = "➖ Удалить",
                 Size = new Size(110, 45),
                 Location = new Point(120, 0),
-                Enabled = false // Изначально неактивна
+                Enabled = false
             }.AsDanger();
             btnDeleteProduct.Click += (s, e) => DeleteProductClicked?.Invoke(this, e);
 
             rightPanel.Controls.AddRange(new Control[] { btnAddProduct, btnDeleteProduct });
 
-            // Добавляем панели в основной контрол
             this.Controls.AddRange(new Control[] { leftPanel, rightPanel });
-
             this.ResumeLayout(false);
         }
-
-        private void ApplyStyles()
+        private void IncreaseTemperature()
         {
-            // Дополнительные стили если нужно
+            if (_temperatureService.GetCurrentTemperature() <= 9.5)
+            {
+                try
+                {
+                    _temperatureService.IncreaseTemperature();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Ошибка при увеличении температуры: {ex.Message}",
+                        "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        private void DecreaseTemperature()
+        {
+            if (_temperatureService.GetCurrentTemperature() >= -9.5)
+            {
+                try
+                {
+                    _temperatureService.DecreaseTemperature();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Ошибка при уменьшении температуры: {ex.Message}",
+                        "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
         }
     }
 }

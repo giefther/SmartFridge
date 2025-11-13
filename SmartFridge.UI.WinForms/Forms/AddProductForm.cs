@@ -1,8 +1,6 @@
 ﻿using SmartFridge.Core.Interfaces;
 using SmartFridge.Core.Models;
 using SmartFridge.UI.WinForms.Styles;
-using System;
-using System.Windows.Forms;
 
 namespace SmartFridge.UI.WinForms.Forms
 {
@@ -22,8 +20,6 @@ namespace SmartFridge.UI.WinForms.Forms
         {
             this.AsDialogForm();
             this.Text = "Добавить продукт";
-
-            // Устанавливаем минимальный размер
             this.MinimumSize = new Size(450, 400);
 
             // Выбираем первую категорию по умолчанию

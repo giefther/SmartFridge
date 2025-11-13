@@ -1,7 +1,4 @@
 ﻿using SmartFridge.UI.WinForms.Styles;
-using System;
-using System.Drawing;
-using System.Windows.Forms;
 
 namespace SmartFridge.UI.WinForms.Controls
 {
@@ -27,11 +24,9 @@ namespace SmartFridge.UI.WinForms.Controls
         {
             this.SuspendLayout();
 
-            // Основной контейнер
             statContainer = new Panel().AsCard();
             statContainer.Dock = DockStyle.Fill;
 
-            // Заголовок
             statTitle = new Label
             {
                 Text = "📊 Статистика",
@@ -41,7 +36,6 @@ namespace SmartFridge.UI.WinForms.Controls
             };
             statTitle.AsHeader();
 
-            // Панель для статистики
             statsPanel = new Panel
             {
                 Dock = DockStyle.Fill,
@@ -58,7 +52,6 @@ namespace SmartFridge.UI.WinForms.Controls
         {
             statsPanel.Controls.Clear();
 
-            // Создаем элементы статистики с ref
             CreateStatItem("Всего", "0", Color.Gray, ref TotalValueLabel);
             CreateStatItem("Свежих", "0", Color.Green, ref FreshValueLabel);
             CreateStatItem("Скоро истекает", "0", Color.Orange, ref SoonValueLabel);
@@ -75,7 +68,6 @@ namespace SmartFridge.UI.WinForms.Controls
             };
             statsPanel.Controls.Add(itemPanel);
 
-            // Цветной символ ●
             var colorLabel = new Label
             {
                 Text = "●",
@@ -87,7 +79,6 @@ namespace SmartFridge.UI.WinForms.Controls
             };
             itemPanel.Controls.Add(colorLabel);
 
-            // Название категории
             var titleLabel = new Label
             {
                 Text = title,
@@ -99,7 +90,6 @@ namespace SmartFridge.UI.WinForms.Controls
             };
             itemPanel.Controls.Add(titleLabel);
 
-            // Значение (сохраняем ссылку)
             valueLabel = new Label
             {
                 Text = value,

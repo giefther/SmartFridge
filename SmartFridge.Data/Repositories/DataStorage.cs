@@ -1,6 +1,5 @@
 ﻿using SmartFridge.Core.Models;
 using SmartFridge.Data.Repositories;
-using System.IO;
 
 namespace SmartFridge.Data
 {
