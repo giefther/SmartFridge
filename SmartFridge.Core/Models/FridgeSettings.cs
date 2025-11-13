@@ -3,12 +3,12 @@
     public class FridgeSettings
     {
         private double _temperature = 5.0;
-        public double Temperature 
+        public double Temperature
         {
             get => _temperature;
-            set 
+            set
             {
-                if (value < -10 || value > +10) 
+                if (value < -10 || value > +10)
                     throw new ArgumentException("The temperature must be from -10°C to +10°C");
                 _temperature = value;
             }

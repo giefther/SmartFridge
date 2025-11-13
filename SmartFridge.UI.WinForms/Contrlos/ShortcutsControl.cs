@@ -1,6 +1,4 @@
 ﻿using SmartFridge.UI.WinForms.Styles;
-using System.Drawing;
-using System.Windows.Forms;
 
 namespace SmartFridge.UI.WinForms.Controls
 {
@@ -19,12 +17,10 @@ namespace SmartFridge.UI.WinForms.Controls
         {
             this.SuspendLayout();
 
-            // Основной контейнер
             mainContainer = new Panel().AsCard();
             mainContainer.Dock = DockStyle.Fill;
             mainContainer.Padding = new Padding(15);
 
-            // Заголовок
             titleLabel = new Label
             {
                 Text = "⌨️ Горячие клавиши",

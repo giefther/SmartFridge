@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace SmartFridge.Core.Interfaces
+﻿namespace SmartFridge.Core.Interfaces
 {
     public interface IRepository<T>
     {

@@ -1,5 +1,4 @@
 ﻿using SmartFridge.Core.Models;
-using System.Collections.Generic;
 
 namespace SmartFridge.Core.Interfaces
 {

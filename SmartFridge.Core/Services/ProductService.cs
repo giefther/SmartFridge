@@ -1,8 +1,5 @@
 ﻿using SmartFridge.Core.Interfaces;
 using SmartFridge.Core.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace SmartFridge.Core.Services
 {

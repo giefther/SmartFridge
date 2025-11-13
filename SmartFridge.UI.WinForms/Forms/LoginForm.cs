@@ -1,13 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using SmartFridge.Core.Models;
+﻿using SmartFridge.Core.Models;
 using SmartFridge.UI.WinForms.Composition;
 using SmartFridge.UI.WinForms.Styles;
 
@@ -19,14 +10,9 @@ namespace SmartFridge.UI.WinForms.Forms
         {
             InitializeComponent();
             Text = "Умный Холодильник — Вход";
-
-            // ПРИМЕНЯЕМ СТИЛИ ЧЕРЕЗ EXTENSION METHODS
             ApplyStyles();
 
-            // Подписываемся на событие изменения размера формы
             this.SizeChanged += LoginForm_SizeChanged;
-
-            // Центрируем контейнер при старте
             CenterContainer();
         }
 
@@ -36,7 +22,7 @@ namespace SmartFridge.UI.WinForms.Forms
             this.BackColor = CustomFormStyles.LightColor;
             this.Font = CustomFormStyles.NormalFont;
 
-            // Стили через extension methods (более читабельно)
+            // Стили через extension methods
             pnlContainer.AsContainer();
             lblTitle.AsTitle();
             lblUsername.AsNormal();

@@ -1,6 +1,4 @@
-﻿using System.Drawing;
-
-namespace SmartFridge.UI.WinForms.Styles
+﻿namespace SmartFridge.UI.WinForms.Styles
 {
     /// <summary>
     /// Централизованный стилевой класс для форм

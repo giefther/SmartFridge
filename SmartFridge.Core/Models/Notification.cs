@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SmartFridge.Core.Models
+﻿namespace SmartFridge.Core.Models
 {
     public class Notification
     {

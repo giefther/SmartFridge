@@ -1,9 +1,4 @@
-﻿using SmartFridge.Core.Models;
-using System.Drawing;
-using System.Drawing.Printing;
-using System.Windows.Forms;
-
-namespace SmartFridge.UI.WinForms.Styles
+﻿namespace SmartFridge.UI.WinForms.Styles
 {
     /// <summary>
     /// Расширенные методы для применения стилей к элементам форм
@@ -62,7 +57,7 @@ namespace SmartFridge.UI.WinForms.Styles
         public static Panel AsTopContainer(this Panel panel)
         {
             panel.Dock = DockStyle.Top;
-            panel.Height = 150; 
+            panel.Height = 150;
             panel.BackColor = CustomFormStyles.PrimaryColor;
             panel.Padding = new Padding(0);
             panel.Margin = new Padding(0);
@@ -104,7 +99,7 @@ namespace SmartFridge.UI.WinForms.Styles
         public static Panel AsBottomContainer(this Panel panel)
         {
             panel.Dock = DockStyle.Bottom;
-            panel.Height = 80; 
+            panel.Height = 80;
             panel.BackColor = CustomFormStyles.DarkColor;
             panel.Padding = new Padding(10);
             panel.Margin = new Padding(0);

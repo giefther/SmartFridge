@@ -1,8 +1,5 @@
 ﻿using SmartFridge.Core.Interfaces;
 using SmartFridge.UI.WinForms.Styles;
-using System;
-using System.ComponentModel;
-using System.Windows.Forms;
 
 namespace SmartFridge.UI.WinForms.Controls
 {
@@ -34,17 +31,15 @@ namespace SmartFridge.UI.WinForms.Controls
         {
             _temperatureService = temperatureService;
             InitializeComponent();
-            ApplyStyles();
         }
 
         private void InitializeComponent()
         {
             this.SuspendLayout();
 
-            // Основной контейнер toolbar'а
             this.BackColor = CustomFormStyles.SecondaryColor;
             this.Padding = new Padding(15, 8, 15, 8);
-            this.Height = 60; // Фиксированная высота
+            this.Height = 60;
 
             // Левая часть - управление температурой
             var leftPanel = new Panel
@@ -55,23 +50,21 @@ namespace SmartFridge.UI.WinForms.Controls
                 BackColor = Color.Transparent
             };
 
-            // Кнопка уменьшения температуры
             btnDecreaseTemp = new Button
             {
                 Text = "❄️ Уменьшить",
                 Size = new Size(165, 45),
                 Location = new Point(0, 0)
             }.AsLight();
-            btnDecreaseTemp.Click += (s, e) => DecreaseTemperature(); // ← ИЗМЕНИТЬ
+            btnDecreaseTemp.Click += (s, e) => DecreaseTemperature();
 
-            // Кнопка увеличения температуры
             btnIncreaseTemp = new Button
             {
                 Text = "☀️ Увеличить",
                 Size = new Size(165, 45),
                 Location = new Point(175, 0)
             }.AsLight();
-            btnIncreaseTemp.Click += (s, e) => IncreaseTemperature(); // ← ИЗМЕНИТЬ
+            btnIncreaseTemp.Click += (s, e) => IncreaseTemperature(); 
 
             leftPanel.Controls.AddRange(new Control[] { btnDecreaseTemp, btnIncreaseTemp });
 
@@ -84,7 +77,6 @@ namespace SmartFridge.UI.WinForms.Controls
                 BackColor = Color.Transparent
             };
 
-            // Кнопка добавления продукта
             btnAddProduct = new Button
             {
                 Text = "➕ Добавить",
@@ -93,7 +85,6 @@ namespace SmartFridge.UI.WinForms.Controls
             }.AsSuccess();
             btnAddProduct.Click += (s, e) => AddProductClicked?.Invoke(this, e);
 
-            // Кнопка удаления продукта
             btnDeleteProduct = new Button
             {
                 Text = "➖ Удалить",
@@ -138,11 +129,6 @@ namespace SmartFridge.UI.WinForms.Controls
                         "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
-        }
-
-        private void ApplyStyles()
-        {
-            // Дополнительные стили если нужно
         }
     }
 }

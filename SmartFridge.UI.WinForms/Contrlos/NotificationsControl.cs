@@ -1,9 +1,6 @@
-﻿using SmartFridge.UI.WinForms.Styles;
-using SmartFridge.Core.Interfaces;
+﻿using SmartFridge.Core.Interfaces;
 using SmartFridge.Core.Models;
-using System;
-using System.Collections.Generic;
-using System.Windows.Forms;
+using SmartFridge.UI.WinForms.Styles;
 
 namespace SmartFridge.UI.WinForms.Controls
 {

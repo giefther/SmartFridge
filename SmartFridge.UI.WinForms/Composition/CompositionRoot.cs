@@ -2,7 +2,6 @@
 using SmartFridge.Core.Models;
 using SmartFridge.Core.Services;
 using SmartFridge.Data;
-using System.Collections.Generic;
 
 namespace SmartFridge.UI.WinForms.Composition
 {
@@ -18,9 +17,6 @@ namespace SmartFridge.UI.WinForms.Composition
             UserService = new UserService(userRepository);
         }
 
-        /// <summary>
-        /// Получает ProductService для конкретного пользователя с кэшированием
-        /// </summary>
         public static IProductService GetProductService(User user)
         {
             if (user == null)
@@ -54,18 +50,5 @@ namespace SmartFridge.UI.WinForms.Composition
         {
             _productServices.Remove(userId);
         }
-
-        /// <summary>
-        /// Очищает весь кэш ProductService (например, при выходе из приложения)
-        /// </summary>
-        public static void ClearAllCache()
-        {
-            _productServices.Clear();
-        }
-
-        /// <summary>
-        /// Получает количество закэшированных сервисов (для отладки)
-        /// </summary>
-        public static int GetCacheCount() => _productServices.Count;
     }
 }

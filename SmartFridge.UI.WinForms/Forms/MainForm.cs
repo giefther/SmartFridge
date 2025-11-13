@@ -1,12 +1,7 @@
-﻿using Microsoft.VisualBasic.ApplicationServices;
-using SmartFridge.Core.Interfaces;
-using SmartFridge.Core.Models;
-using SmartFridge.Core.Services;
+﻿using SmartFridge.Core.Interfaces;
 using SmartFridge.UI.WinForms.Composition;
 using SmartFridge.UI.WinForms.Controls;
 using SmartFridge.UI.WinForms.Styles;
-using System;
-using System.Windows.Forms;
 
 namespace SmartFridge.UI.WinForms.Forms
 {
@@ -18,7 +13,7 @@ namespace SmartFridge.UI.WinForms.Forms
         // Сервисы
         private readonly IProductService _productService;
         private readonly ITemperatureService _temperatureService;
-        
+
         // Контроллы
         private ProductsGridControl productsGridControl;
         private HeaderControl headerControl;
@@ -50,7 +45,7 @@ namespace SmartFridge.UI.WinForms.Forms
         {
             _currentUser = user ?? throw new ArgumentNullException(nameof(user));
             _productService = CompositionRoot.GetProductService(user);
-            _temperatureService = CompositionRoot.GetTemperatureService(user); 
+            _temperatureService = CompositionRoot.GetTemperatureService(user);
 
             InitializeComponent();
             SetupContainers(_temperatureService);
@@ -62,7 +57,7 @@ namespace SmartFridge.UI.WinForms.Forms
         {
             CreateCentralContainer();
             CreateCentralContainers();
-            CreateTopContainer(temperatureService); 
+            CreateTopContainer(temperatureService);
             CreateBottomContainer();
         }
 
@@ -73,11 +68,11 @@ namespace SmartFridge.UI.WinForms.Forms
             this.Controls.Add(topContainer);
 
             CreateHeaderControl(temperatureService);
-            CreateToolbarControl(temperatureService); // ← ПЕРЕДАТЬ СЕРВИС
+            CreateToolbarControl(temperatureService);
         }
         private void CreateToolbarControl(ITemperatureService temperatureService)
         {
-            toolbarControl = new ToolbarControl(temperatureService) // ← ПЕРЕДАТЬ СЕРВИС
+            toolbarControl = new ToolbarControl(temperatureService) 
             {
                 Height = CalculatePercentageValue(topContainer.Height, _toolbarToTopHeightPercentage),
                 Dock = DockStyle.Bottom
@@ -106,7 +101,7 @@ namespace SmartFridge.UI.WinForms.Forms
         }
         private void CreateHeaderControl(ITemperatureService temperatureService)
         {
-            headerControl = new HeaderControl(_currentUser, temperatureService) // ← ПЕРЕДАТЬ СЕРВИС
+            headerControl = new HeaderControl(_currentUser, temperatureService) 
             {
                 Height = CalculatePercentageValue(topContainer.Height, _headerToTopHeightPercentage),
                 Dock = DockStyle.Top
@@ -207,11 +202,11 @@ namespace SmartFridge.UI.WinForms.Forms
 
         private void CreateLeftContent()
         {
-            // NotificationsControl - нижняя половина (50%) - ДОБАВЛЯЕМ ПЕРВЫМ
+            // NotificationsControl - нижняя половина (50%)
             CreateNotificationsControl();
             leftCentralContainer.Controls.Add(notificationsControl);
 
-            // StatisticsControl - верхняя половина (50%) - ДОБАВЛЯЕМ ВТОРЫМ
+            // StatisticsControl - верхняя половина (50%)
             CreateStatisticsControl();
             leftCentralContainer.Controls.Add(statisticsControl);
         }
@@ -244,7 +239,6 @@ namespace SmartFridge.UI.WinForms.Forms
 
         private void ApplyStyles()
         {
-            // Стиль формы
             this.AsMainForm();
             this.Text = $"Умный холодильник - {_currentUser.Username}";
         }
@@ -263,8 +257,6 @@ namespace SmartFridge.UI.WinForms.Forms
         protected override void OnResize(EventArgs e)
         {
             base.OnResize(e);
-
-            // Обновляем высоты при изменении размера формы
             if (topContainer != null)
                 topContainer.Height = CalculatePercentageValue(this.ClientSize.Height, _topToFormHeightPercentage);
 
@@ -293,7 +285,6 @@ namespace SmartFridge.UI.WinForms.Forms
         }
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
-            // Обрабатываем комбинации клавиш
             switch (keyData)
             {
                 case Keys.Control | Keys.A: // Add product
