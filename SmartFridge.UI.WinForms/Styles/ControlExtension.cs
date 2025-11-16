@@ -162,7 +162,7 @@
             return panel;
         }
 
-        public static Panel AsNotificationsPanel(this Panel panel)
+        public static Panel AsNotificationsItem(this Panel panel)
         {
             panel.Height = 60;
             panel.Margin = new Padding(0, 2, 0, 2);
