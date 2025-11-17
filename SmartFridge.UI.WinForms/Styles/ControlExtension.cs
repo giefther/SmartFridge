@@ -5,26 +5,6 @@
     /// </summary>
     public static class ControlExtensions
     {
-        // ===== UserControl =====
-        public static UserControl AsHeaderContainer(this UserControl control)
-        {
-            control.BackColor = CustomFormStyles.DarkColor;
-            control.Padding = new Padding(20, 5, 20, 10);
-            return control;
-        }
-
-        public static UserControl AsToolbarContainer(this UserControl control)
-        {
-            control.BackColor = CustomFormStyles.SecondaryColor;
-            control.Padding = new Padding(15, 8, 15, 8);
-            return control;
-        }
-
-        public static UserControl AsTransparent(this UserControl control)
-        {
-            control.BackColor = Color.Transparent;
-            return control;
-        }
         // ===== Main Form Containers =====
 
         public static Panel AsLeftCentralContainer(this Panel panel)
@@ -64,29 +44,6 @@
             return panel;
         }
 
-        public static Panel AsHeaderContainer(this Panel panel)
-        {
-            panel.Dock = DockStyle.Top;
-            panel.BackColor = CustomFormStyles.DarkColor;
-            panel.Padding = new Padding(20, 5, 20, 10);
-            return panel;
-        }
-
-        public static Panel AsToolbarContainer(this Panel panel)
-        {
-            panel.Dock = DockStyle.Bottom;
-            panel.BackColor = CustomFormStyles.SecondaryColor;
-            panel.Padding = new Padding(15, 8, 15, 8);
-            return panel;
-        }
-        // ===== RadioButton =====
-        public static RadioButton AsCheckbox(this RadioButton radioButton)
-        {
-            radioButton.Font = CustomFormStyles.NormalFont;
-            radioButton.ForeColor = CustomFormStyles.DarkColor;
-            radioButton.AutoSize = true;
-            return radioButton;
-        }
         public static Panel AsCentralContainer(this Panel panel)
         {
             panel.Dock = DockStyle.Fill;
@@ -104,38 +61,6 @@
             panel.Padding = new Padding(10);
             panel.Margin = new Padding(0);
             return panel;
-        }
-
-        public static Label AsContainerLabel(this Label label)
-        {
-            label.Dock = DockStyle.Fill;
-            label.TextAlign = ContentAlignment.MiddleCenter;
-            label.Font = CustomFormStyles.NormalFont;
-            return label;
-        }
-
-        public static Label AsTopContainerLabel(this Label label)
-        {
-            label.AsContainerLabel();
-            label.ForeColor = Color.White;
-            label.Font = CustomFormStyles.HeaderFont;
-            return label;
-        }
-
-        public static Label AsCentralContainerLabel(this Label label)
-        {
-            label.AsContainerLabel();
-            label.ForeColor = CustomFormStyles.DarkColor;
-            label.Font = CustomFormStyles.HeaderFont;
-            return label;
-        }
-
-        public static Label AsBottomContainerLabel(this Label label)
-        {
-            label.AsContainerLabel();
-            label.ForeColor = Color.White;
-            label.Font = CustomFormStyles.NormalFont;
-            return label;
         }
 
         // ===== Button =====
@@ -174,18 +99,6 @@
             return button;
         }
 
-        public static Button AsUpdate(this Button button)
-        {
-            button.BackColor = CustomFormStyles.PrimaryColor; // Синий цвет
-            button.ForeColor = Color.White;
-            button.FlatStyle = FlatStyle.Flat;
-            button.FlatAppearance.BorderSize = 0;
-            button.Font = CustomFormStyles.NormalFont;
-            button.Cursor = Cursors.Hand;
-            button.Padding = new Padding(10, 5, 10, 5);
-            return button;
-        }
-
         public static Button AsSuccess(this Button button)
         {
             button.BackColor = CustomFormStyles.SuccessColor;
@@ -210,30 +123,12 @@
             return button;
         }
 
-        public static Button AsWarning(this Button button)
-        {
-            button.BackColor = CustomFormStyles.WarningColor;
-            button.ForeColor = Color.White;
-            button.FlatStyle = FlatStyle.Flat;
-            button.FlatAppearance.BorderSize = 0;
-            button.Font = CustomFormStyles.NormalFont;
-            button.Cursor = Cursors.Hand;
-            button.Padding = new Padding(10, 5, 10, 5);
-            return button;
-        }
-
         // ===== Label =====
 
         public static Label WithWhiteText(this Label label)
         {
             label.ForeColor = Color.White;
             return label;
-        }
-
-        public static Button WithWhiteText(this Button button)
-        {
-            button.ForeColor = Color.White;
-            return button;
         }
 
         public static Label AsTitle(this Label label)
@@ -257,34 +152,6 @@
             return label;
         }
 
-        public static Label AsSmall(this Label label)
-        {
-            label.Font = CustomFormStyles.SmallFont;
-            label.ForeColor = CustomFormStyles.DarkColor;
-            return label;
-        }
-
-        public static Label AsSuccess(this Label label)
-        {
-            label.Font = CustomFormStyles.NormalFont;
-            label.ForeColor = CustomFormStyles.SuccessColor;
-            return label;
-        }
-
-        public static Label AsDanger(this Label label)
-        {
-            label.Font = CustomFormStyles.NormalFont;
-            label.ForeColor = CustomFormStyles.DangerColor;
-            return label;
-        }
-
-        public static Label AsWarning(this Label label)
-        {
-            label.Font = CustomFormStyles.NormalFont;
-            label.ForeColor = CustomFormStyles.WarningColor;
-            return label;
-        }
-
         // ===== Panel =====
 
         public static Panel AsContainer(this Panel panel)
@@ -295,7 +162,7 @@
             return panel;
         }
 
-        public static Panel AsNotificationsPanel(this Panel panel)
+        public static Panel AsNotificationsItem(this Panel panel)
         {
             panel.Height = 60;
             panel.Margin = new Padding(0, 2, 0, 2);
@@ -311,26 +178,11 @@
             return panel;
         }
 
-        public static Panel AsTransparent(this Panel panel)
-        {
-            panel.BackColor = Color.Transparent;
-            panel.BorderStyle = BorderStyle.None;
-            return panel;
-        }
-
         // ===== TextBox =====
 
         public static TextBox AsTextField(this TextBox textBox)
         {
             textBox.Font = CustomFormStyles.NormalFont;
-            textBox.BorderStyle = BorderStyle.FixedSingle;
-            textBox.BackColor = Color.White;
-            return textBox;
-        }
-
-        public static TextBox AsLargeTextField(this TextBox textBox)
-        {
-            textBox.Font = CustomFormStyles.HeaderFont;
             textBox.BorderStyle = BorderStyle.FixedSingle;
             textBox.BackColor = Color.White;
             return textBox;
@@ -389,61 +241,6 @@
             dataGrid.ColumnHeadersDefaultCellStyle.SelectionBackColor = CustomFormStyles.SecondaryColor;
             dataGrid.ColumnHeadersDefaultCellStyle.SelectionForeColor = CustomFormStyles.LightColor;
             return dataGrid;
-        }
-
-        // ===== CheckBox ====
-
-        public static CheckBox AsCheckbox(this CheckBox checkBox)
-        {
-            checkBox.Font = CustomFormStyles.NormalFont;
-            checkBox.ForeColor = CustomFormStyles.DarkColor;
-            return checkBox;
-        }
-
-        // ===== GroupBox =====
-
-        public static GroupBox AsGroup(this GroupBox groupBox)
-        {
-            groupBox.Font = CustomFormStyles.HeaderFont;
-            groupBox.ForeColor = CustomFormStyles.DarkColor;
-            return groupBox;
-        }
-
-        // ===== Дополнительные стилевые помощники =====
-
-        public static Control WithMargin(this Control control, int all)
-        {
-            control.Margin = new Padding(all);
-            return control;
-        }
-
-        public static Control WithMargin(this Control control, int left, int top, int right, int bottom)
-        {
-            control.Margin = new Padding(left, top, right, bottom);
-            return control;
-        }
-
-        public static Control WithPadding(this Control control, int all)
-        {
-            control.Padding = new Padding(all);
-            return control;
-        }
-
-        public static Control WithPadding(this Control control, int left, int top, int right, int bottom)
-        {
-            control.Padding = new Padding(left, top, right, bottom);
-            return control;
-        }
-
-        public static Control Centered(this Control control)
-        {
-            if (control.Parent != null)
-            {
-                control.Anchor = AnchorStyles.None;
-                control.Left = (control.Parent.ClientSize.Width - control.Width) / 2;
-                control.Top = (control.Parent.ClientSize.Height - control.Height) / 2;
-            }
-            return control;
         }
     }
 }

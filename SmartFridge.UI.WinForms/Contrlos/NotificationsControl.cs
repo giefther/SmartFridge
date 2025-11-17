@@ -9,7 +9,6 @@ namespace SmartFridge.UI.WinForms.Controls
         private readonly IProductService _productService;
         private readonly ITemperatureService _temperatureService;
         private FlowLayoutPanel notificationsPanel;
-        private Label emptyLabel;
         private Label notificationsTitle;
         private List<Notification> _currentNotificaitons;
 
@@ -51,15 +50,6 @@ namespace SmartFridge.UI.WinForms.Controls
                 WrapContents = false
             };
 
-            emptyLabel = new Label
-            {
-                Text = "Здесь будут уведомления",
-                Dock = DockStyle.Fill,
-                TextAlign = ContentAlignment.MiddleCenter
-            };
-            emptyLabel.AsNormal();
-            emptyLabel.ForeColor = CustomFormStyles.SecondaryColor;
-
             notificationsContainer.Controls.AddRange(new Control[] {
                 notificationsPanel, notificationsTitle
             });
@@ -74,15 +64,15 @@ namespace SmartFridge.UI.WinForms.Controls
 
             // Проверяем продукты
             var products = _productService.GetAllProducts();
-            CheckProductNotifications(products, notifications);
+            GenerateProductNotifications(products, notifications);
 
             // Проверяем температуру
             var currentTemp = _temperatureService.GetCurrentTemperature();
-            CheckTemperatureNotifications(currentTemp, notifications);
+            GenerateTemperatureNotifications(currentTemp, notifications);
 
             return notifications;
         }
-        private void CheckProductNotifications(IEnumerable<Product> products, List<Notification> notifications)
+        private void GenerateProductNotifications(IEnumerable<Product> products, List<Notification> notifications)
         {
             var expiredCount = _productService.GetExpiredProducts().Count();
             var soonCount = _productService.GetExpiringSoonProducts(3).Count();
@@ -107,7 +97,7 @@ namespace SmartFridge.UI.WinForms.Controls
                 });
             }
         }
-        private void CheckTemperatureNotifications(double currentTemp, List<Notification> notifications)
+        private void GenerateTemperatureNotifications(double currentTemp, List<Notification> notifications)
         {
             // Низкая температура
             if (currentTemp < 2)
@@ -144,12 +134,6 @@ namespace SmartFridge.UI.WinForms.Controls
         {
             notificationsPanel.Controls.Clear();
 
-            if (notifications.Count == 0)
-            {
-                notificationsPanel.Controls.Add(emptyLabel);
-                return;
-            }
-
             foreach (var notification in notifications)
             {
                 var notificationItem = CreateNotificationItem(notification);
@@ -162,7 +146,7 @@ namespace SmartFridge.UI.WinForms.Controls
             {
                 Width = notificationsPanel.ClientSize.Width - 25,
                 BackColor = GetNotificationColor(notification.Type),
-            }.AsNotificationsPanel();
+            }.AsNotificationsItem();
 
             // Иконка уведомления
             var iconLabel = new Label
