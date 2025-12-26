@@ -4,8 +4,8 @@ namespace SmartFridge.UI.WinForms.Controls
 {
     public partial class ShortcutsControl : UserControl
     {
-        private Panel shortcutsPanel;
-        private Label shortcutsTitle;
+        private Panel mainContainer;
+        private Label titleLabel;
 
         public ShortcutsControl()
         {
@@ -17,21 +17,21 @@ namespace SmartFridge.UI.WinForms.Controls
         {
             this.SuspendLayout();
 
-            shortcutsPanel = new Panel().AsCard();
-            shortcutsPanel.Dock = DockStyle.Fill;
-            shortcutsPanel.Padding = new Padding(15);
+            mainContainer = new Panel().AsCard();
+            mainContainer.Dock = DockStyle.Fill;
+            mainContainer.Padding = new Padding(15);
 
-            shortcutsTitle = new Label
+            titleLabel = new Label
             {
                 Text = "⌨️ Горячие клавиши",
                 Dock = DockStyle.Top,
                 Height = 30,
                 TextAlign = ContentAlignment.MiddleLeft
             };
-            shortcutsTitle.AsHeader();
+            titleLabel.AsHeader();
 
-            shortcutsPanel.Controls.Add(shortcutsTitle);
-            this.Controls.Add(shortcutsPanel);
+            mainContainer.Controls.Add(titleLabel);
+            this.Controls.Add(mainContainer);
 
             this.ResumeLayout(false);
         }
@@ -45,7 +45,7 @@ namespace SmartFridge.UI.WinForms.Controls
             };
 
             // Группа управления продуктами
-            CreateShortcutGroup(contentPanel, "📦 Продукты:", 40,
+            CreateShortcutGroup(contentPanel, "📦 Управление продуктами:", 0,
                 new[]
                 {
                     ("➕", "CTRL + A", "Добавить продукт"),
@@ -53,14 +53,14 @@ namespace SmartFridge.UI.WinForms.Controls
                 });
 
             // Группа управления температурой
-            CreateShortcutGroup(contentPanel, "🌡️ Температура:", 160,
+            CreateShortcutGroup(contentPanel, "🌡️ Управление температурой:", 120,
                 new[]
                 {
                     ("☀️", "CTRL + U", "Увеличить температуру"),
                     ("❄️", "CTRL + D", "Уменьшить температуру")
                 });
 
-            shortcutsPanel.Controls.Add(contentPanel);
+            mainContainer.Controls.Add(contentPanel);
         }
 
         private void CreateShortcutGroup(Panel parent, string groupTitle, int topOffset, (string icon, string keys, string action)[] shortcuts)

@@ -146,7 +146,7 @@ namespace SmartFridge.UI.WinForms.Controls
             {
                 Width = notificationsPanel.ClientSize.Width - 25,
                 BackColor = GetNotificationColor(notification.Type),
-            }.AsNotificationsItem();
+            }.AsNotificationsPanel();
 
             // Иконка уведомления
             var iconLabel = new Label
